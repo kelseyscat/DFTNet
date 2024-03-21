@@ -1,40 +1,23 @@
-import torch  # tim，穿梭AdaIN, 通道数全都 / 2
-import torch.nn as nn
+import torch # 两层, 加空间信息
+from torch import nn, einsum
 import torch.nn.functional as F
-from torchgan.layers import SpectralNorm2d
-import enum
 import numpy as np
-from ssim import msssim
 from torch.autograd import Variable
-from torchvision.models.vgg import vgg19
-import os
-from thop import profile
-from thop import clever_format
+
+from einops import rearrange, repeat
+from einops.layers.torch import Rearrange
+import numbers
+from calflops import calculate_flops
 
 NUM_BANDS = 4
 PATCH_SIZE = 256
 SCALE_FACTOR = 16
+NHEAD = 2
+STAGE = 1
+
 # os.environ['CUDA_VISIBLE_DEVICES'] = '1'
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
-def calc_mean_std(feat, eps=1e-5):
-    size = feat.size()
-    assert (len(size) == 4)
-    N, C = size[:2]
-    feat_var = feat.view(N, C, -1).var(dim=2) + eps
-    feat_std = feat_var.sqrt().view(N, C, 1, 1)
-    feat_mean = feat.view(N, C, -1).mean(dim=2).view(N, C, 1, 1)
-    return feat_mean, feat_std
-
-def adaptive_instance_normalization(content_feat, style_feat):
-    assert (content_feat.size()[:2] == style_feat.size()[:2])
-    size = content_feat.size()
-    style_mean, style_std = calc_mean_std(style_feat)
-    content_mean, content_std = calc_mean_std(content_feat)
-
-    normalized_feat = (content_feat - content_mean.expand(
-        size)) / content_std.expand(size)
-    return normalized_feat * style_std.expand(size) + style_mean.expand(size)
 
 def conv_1x1(in_channel, out_channel):
     return nn.Sequential(
@@ -43,136 +26,6 @@ def conv_1x1(in_channel, out_channel):
         nn.ReLU(inplace=True)
     )
 
-class TFF(torch.nn.Module):
-    def __init__(self, in_channel, out_channel):  # outchannel设256
-        super(TFF, self).__init__()
-        self.catconvA = conv_3x3(in_channel * 2, in_channel)
-        self.catconvB = conv_3x3(in_channel * 2, in_channel)
-        self.catconv = conv_3x3(in_channel * 3, out_channel)
-        self.convA = nn.Conv2d(in_channel, 1, 1)
-        self.convB = nn.Conv2d(in_channel, 1, 1)
-        self.sigmoid = nn.Sigmoid()
-
-    def forward(self, xA, xB):
-        x_diff = xA - xB
-        x_diffA = self.catconvA(torch.cat([x_diff, xA], dim=1))
-        x_diffB = self.catconvB(torch.cat([x_diff, xB], dim=1))
-
-        A_weight = self.sigmoid(self.convA(x_diffA))
-        B_weight = self.sigmoid(self.convB(x_diffB))
-
-        xA = A_weight * xA
-        xB = B_weight * xB
-
-        x = self.catconv(torch.cat([xA, xB, x_diff], dim=1))
-        return xA, xB, x
-
-
-class ResBlock(nn.Module):
-    def __init__(self, in_channels, kernel_size = 3, stride = 1, padding = 1, bias = True):
-        super(ResBlock, self).__init__()
-        residual = [
-            nn.ReflectionPad2d(padding),
-            nn.Conv2d(in_channels, in_channels, kernel_size, stride, 0, bias=bias),
-            nn.Dropout(0.5),
-            nn.LeakyReLU(inplace=True),
-            nn.ReflectionPad2d(padding),
-            nn.Conv2d(in_channels, in_channels, kernel_size, stride, 0, bias=bias),
-            nn.Dropout(0.5),
-        ]
-        self.residual = nn.Sequential(*residual)
-
-    def forward(self, inputs):
-        trunk = self.residual(inputs)
-        return trunk + inputs
-
-class InfoExchange(torch.nn.Module):
-    def __init__(self, in_channels=NUM_BANDS):
-        super(InfoExchange, self).__init__()  # VGG structure
-        channels = (16, 32, 64, 128)
-        self.Res_layer1 = nn.Sequential(
-            nn.Conv2d(in_channels, channels[0], 7, 1, 3),
-            ResBlock(channels[0]),
-        )
-        self.Res_layer2 = nn.Sequential(
-            nn.Conv2d(channels[0], channels[1], 3, 2, 1),
-            ResBlock(channels[1]),
-        )
-        self.Res_layer3 = nn.Sequential(
-            nn.Conv2d(channels[1], channels[2], 3, 2, 1),
-            ResBlock(channels[2]),
-        )
-        self.Res_layer4 = nn.Sequential(
-            nn.Conv2d(channels[2], channels[3], 3, 2, 1),
-            ResBlock(channels[3]),
-        )
-        self.ConcatConv1 = conv_1x1(channels[0] * 2, channels[0])
-        self.ConcatConv2 = conv_1x1(channels[1] * 2, channels[1])
-        self.ConcatConv3 = conv_1x1(channels[2] * 2, channels[2])
-        self.ConcatConv4 = conv_1x1(channels[3] * 2, channels[3])
-        self.timeInfo1 = TFF(channels[0], channels[0])
-        self.timeInfo2 = TFF(channels[1], channels[1])
-        self.timeInfo3 = TFF(channels[2], channels[2])
-        self.timeInfo4 = TFF(channels[3], channels[3])
-
-
-    def forward(self, c1, c2, f):
-        c1_1 = self.Res_layer1(c1)
-        c2_1 = self.Res_layer1(c2)
-        f_1 = self.Res_layer1(f)
-
-        x1, x2, _ = self.timeInfo1(c1_1, c2_1)
-        f_1_with_c1_feature = adaptive_instance_normalization(f_1, x1)
-        f_1_with_c2_feature = adaptive_instance_normalization(f_1, x2)
-
-        a = torch.cat((c1_1, f_1_with_c1_feature), dim=1)
-        c1_1 = self.ConcatConv1(a)
-        b = torch.cat((c2_1, f_1_with_c2_feature), dim=1)
-        c2_1 = self.ConcatConv1(b)
-
-        # ---------
-
-        c1_2 = self.Res_layer2(c1_1)
-        c2_2 = self.Res_layer2(c2_1)
-        f_2 = self.Res_layer2(f_1)
-
-        x1, x2, _ = self.timeInfo2(c1_2, c2_2)
-        f_2_with_c1_feature = adaptive_instance_normalization(f_2, x1)
-        f_2_with_c2_feature = adaptive_instance_normalization(f_2, x2)
-
-        a = torch.cat((c1_2, f_2_with_c1_feature), dim=1)
-        c1_2 = self.ConcatConv2(a)
-        b = torch.cat((c2_2, f_2_with_c2_feature), dim=1)
-        c2_2 = self.ConcatConv2(b)
-
-        # ---------
-
-        c1_3 = self.Res_layer3(c1_2)
-        c2_3 = self.Res_layer3(c2_2)
-        f_3 = self.Res_layer3(f_2)
-
-        x1, x2, _ = self.timeInfo3(c1_3, c2_3)
-        f_3_with_c1_feature = adaptive_instance_normalization(f_3, x1)
-        f_3_with_c2_feature = adaptive_instance_normalization(f_3, x2)
-
-        a = torch.cat((c1_3, f_3_with_c1_feature), dim=1)
-        c1_3 = self.ConcatConv3(a)
-        b = torch.cat((c2_3, f_3_with_c2_feature), dim=1)
-        c2_3 = self.ConcatConv3(b)
-
-        # ---------
-
-        c1_4 = self.Res_layer4(c1_3)
-        c2_4 = self.Res_layer4(c2_3)
-        f_4 = self.Res_layer4(f_3)
-
-        x1, x2, x = self.timeInfo4(c1_4, c2_4)
-        f_4_with_c1_feature = adaptive_instance_normalization(f_4, x1)
-        f_4_with_c2_feature = adaptive_instance_normalization(f_4, x2)
-
-
-        return x, [f_1_with_c1_feature, f_1_with_c2_feature], [f_2_with_c1_feature, f_2_with_c2_feature], \
-               [f_3_with_c1_feature, f_3_with_c2_feature], [f_4_with_c1_feature, f_4_with_c2_feature]
 
 def conv_3x3(in_channel, out_channel):
     return nn.Sequential(
@@ -181,59 +34,264 @@ def conv_3x3(in_channel, out_channel):
         nn.ReLU(inplace=True)
     )
 
-class Decoder(nn.Module):
-    def __init__(self, in_channel, out_channel):
-        super(Decoder, self).__init__()
-        channels = (16, 32, 64, 128)
-        self.upsample1 = nn.Sequential(
-            nn.Conv2d(channels[3] * 3, channels[2] * 4, kernel_size=3, stride=1, padding=1),
-            nn.PixelShuffle(2),
-            nn.LeakyReLU(0.1, True),
-        )
+def Spatial_Branch(in_channel, out_channel):
+    return nn.Sequential(
+        conv_3x3(in_channel, out_channel),
+        nn.LeakyReLU(inplace=False),
+        conv_3x3(out_channel, out_channel)
+    )
 
-        self.upsample2 = nn.Sequential(
-            nn.Conv2d(channels[2] * 3, channels[1] * 4, kernel_size=3, stride=1, padding=1),
-            nn.PixelShuffle(2),
-            nn.LeakyReLU(0.1, True),
-        )
+def to_3d(x):
+    return rearrange(x, 'b c h w -> b (h w) c')
 
-        self.upsample3 = nn.Sequential(
-            nn.Conv2d(channels[1] * 3, channels[0] * 4, kernel_size=3, stride=1, padding=1),
-            nn.PixelShuffle(2),
-            nn.LeakyReLU(0.1, True),
-        )
 
-        self.conv = nn.Conv2d(channels[0] * 3, out_channel, kernel_size=3, stride=1, padding=1)
+def to_4d(x, h, w):
+    return rearrange(x, 'b (h w) c -> b c h w', h=h, w=w)
 
-    def forward(self, x, f1, f2, f3, f4):
+class BiasFree_LayerNorm(nn.Module):
+    def __init__(self, normalized_shape):
+        super(BiasFree_LayerNorm, self).__init__()
+        if isinstance(normalized_shape, numbers.Integral):
+            normalized_shape = (normalized_shape,)
+        normalized_shape = torch.Size(normalized_shape)
 
-        x = torch.cat((x, f4[0], f4[1]), dim=1)
-        x = self.upsample1(x)
+        assert len(normalized_shape) == 1
 
-        x = torch.cat((x, f3[0], f3[1]), dim=1)
-        x = self.upsample2(x)
+        self.weight = nn.Parameter(torch.ones(normalized_shape))
+        self.normalized_shape = normalized_shape
 
-        x = torch.cat((x, f2[0], f2[1]), dim=1)
-        x = self.upsample3(x)
+    def forward(self, x):
+        sigma = x.var(-1, keepdim=True, unbiased=False)
+        return x / torch.sqrt(sigma + 1e-5) * self.weight
 
-        x = torch.cat((x, f1[0], f1[1]), dim=1)
-        x = self.conv(x)
+
+class WithBias_LayerNorm(nn.Module):
+    def __init__(self, normalized_shape):
+        super(WithBias_LayerNorm, self).__init__()
+        if isinstance(normalized_shape, numbers.Integral):
+            normalized_shape = (normalized_shape,)
+        normalized_shape = torch.Size(normalized_shape)
+
+        assert len(normalized_shape) == 1
+
+        self.weight = nn.Parameter(torch.ones(normalized_shape))
+        self.bias = nn.Parameter(torch.zeros(normalized_shape))
+        self.normalized_shape = normalized_shape
+
+    def forward(self, x):
+        mu = x.mean(-1, keepdim=True)
+        sigma = x.var(-1, keepdim=True, unbiased=False)
+        return (x - mu) / torch.sqrt(sigma + 1e-5) * self.weight + self.bias
+
+class LayerNorm(nn.Module):
+    def __init__(self, dim, LayerNorm_type):
+        super(LayerNorm, self).__init__()
+        if LayerNorm_type == 'BiasFree':
+            self.body = BiasFree_LayerNorm(dim)
+        else:
+            self.body = WithBias_LayerNorm(dim)
+
+    def forward(self, x):
+        h, w = x.shape[-2:]
+        return to_4d(self.body(to_3d(x)), h, w)
+
+class OverlapPatchEmbed(nn.Module):
+    def __init__(self, in_c, embed_dim=48, bias=False):
+        super(OverlapPatchEmbed, self).__init__()
+
+        self.proj = nn.Conv2d(in_c, embed_dim, kernel_size=3, stride=1, padding=1, bias=bias)
+
+    def forward(self, x):
+        x = self.proj(x)
 
         return x
+
+## Multi-DConv Head Transposed Self-Attention (MDTA)
+class Attention(nn.Module):
+    def __init__(self, dim, num_heads, bias):
+        super(Attention, self).__init__()
+        self.num_heads = num_heads  # 注意力头的个数
+        self.temperature = nn.Parameter(torch.ones(num_heads, 1, 1))  # 可学习系数
+
+        # 1*1 升维
+        self.qkv = nn.Conv2d(dim, dim * 3, kernel_size=1, bias=bias)
+        # 3*3 分组卷积
+        self.qkv_dwconv = nn.Conv2d(dim * 3, dim * 3, kernel_size=3, stride=1, padding=1, groups=dim * 3, bias=bias)
+        # 1*1 卷积
+        self.project_out = nn.Conv2d(dim, dim, kernel_size=1, bias=bias)
+
+    def forward(self, x, y):
+        b, c, h, w = x.shape  # 输入的结构 batch 数，通道数和高宽
+
+        x_qkv = self.qkv_dwconv(self.qkv(x))
+        _, k, v = x_qkv.chunk(3, dim=1)  # 第 1 个维度方向切分成 3 块
+
+        y_qkv = self.qkv_dwconv(self.qkv(y))
+        q, _, _ = y_qkv.chunk(3, dim=1)  # 第 1 个维度方向切分成 3 块
+
+        # 改变 q, k, v 的结构为 b head c (h w)，将每个二维 plane 展平
+        q = rearrange(q, 'b (head c) h w -> b head c (h w)', head=self.num_heads)
+        k = rearrange(k, 'b (head c) h w -> b head c (h w)', head=self.num_heads)
+        v = rearrange(v, 'b (head c) h w -> b head c (h w)', head=self.num_heads)
+
+        q = torch.nn.functional.normalize(q, dim=-1)  # C 维度标准化，这里的 C 与通道维度略有不同
+        k = torch.nn.functional.normalize(k, dim=-1)
+
+        attn = (q @ k.transpose(-2, -1)) * self.temperature
+        attn = attn.softmax(dim=-1)
+
+        out = (attn @ v)  # 注意力图(严格来说不算图)
+
+        # 将展平后的注意力图恢复
+        out = rearrange(out, 'b head c (h w) -> b (head c) h w', head=self.num_heads, h=h, w=w)
+        # 真正的注意力图
+        out = self.project_out(out)
+        return out
+
+
+## Gated-Dconv Feed-Forward Network (GDFN)
+class FeedForward(nn.Module):
+    def __init__(self, dim, ffn_expansion_factor, bias):
+        super(FeedForward, self).__init__()
+
+        # 隐藏层特征维度等于输入维度乘以扩张因子
+        hidden_features = int(dim * ffn_expansion_factor)
+        # 1*1 升维
+        self.project_in = nn.Conv2d(dim, hidden_features * 2, kernel_size=1, bias=bias)
+        # 3*3 分组卷积
+        self.dwconv = nn.Conv2d(hidden_features * 2, hidden_features * 2, kernel_size=3, stride=1, padding=1,
+                                groups=hidden_features * 2, bias=bias)
+        # 1*1 降维
+        self.project_out = nn.Conv2d(hidden_features, dim, kernel_size=1, bias=bias)
+
+    def forward(self, x):
+        x = self.project_in(x)
+        x1, x2 = self.dwconv(x).chunk(2, dim=1)  # 第 1 个维度方向切分成 2 块
+        x = F.gelu(x1) * x2  # gelu 相当于 relu+dropout
+        x = self.project_out(x)
+        return x
+
+## 就是标准的 Transformer 架构
+class TransformerBlock(nn.Module):
+    def __init__(self, dim, num_heads, ffn_expansion_factor, bias, LayerNorm_type):
+        super(TransformerBlock, self).__init__()
+
+        self.norm1 = LayerNorm(dim, LayerNorm_type)  # 层标准化
+        self.attn = Attention(dim, num_heads, bias)  # 自注意力
+        self.norm2 = LayerNorm(dim, LayerNorm_type)  # 层表转化
+        self.ffn = FeedForward(dim, ffn_expansion_factor, bias)  # FFN
+
+    def forward(self, x, y):
+        x = y + self.attn(self.norm1(x), self.norm1(y))  # 残差
+        x = x + self.ffn(self.norm2(x))  # 残差
+
+        return x
+
+class Restormer(nn.Module):
+    def __init__(self,
+                 inp_channels,  # [16, 32, 64, 128]
+                 heads,  # [1, 2, 4, 8]
+                 dim=48,  # 特征图维度
+                 num_blocks=[4, 6, 6, 8],
+                 ffn_expansion_factor=2.66,  # 扩展因子
+                 bias=False,
+                 LayerNorm_type='WithBias',  ## Other option 'BiasFree'
+                 ):
+
+        super(Restormer, self).__init__()
+
+        self.patch_embed = OverlapPatchEmbed(inp_channels, dim)
+
+        self.encoder_level = TransformerBlock(dim=dim, num_heads=heads, ffn_expansion_factor=ffn_expansion_factor, bias=bias,
+                             LayerNorm_type=LayerNorm_type)
+
+    def forward(self, X, Y):
+
+        x = self.patch_embed(X)
+        y = self.patch_embed(Y)
+        out_enc_level = self.encoder_level(x, y)
+
+        return out_enc_level
 
 class Generator(nn.Module):
     def __init__(self):
         super(Generator, self).__init__()
-
-        self.encoder = InfoExchange(NUM_BANDS)
-        self.decoder = Decoder(256, 4)
+        self.Conv1 = conv_3x3(NUM_BANDS, 16)
+        self.Conv2 = conv_3x3(16, 32)
+        self.Conv3 = conv_3x3(32, 64)
+        self.Conv4 = conv_3x3(64, 128)
+        self.Transformer1 = Restormer(inp_channels=16, heads=1)
+        self.Transformer2 = Restormer(inp_channels=32, heads=2)
+        self.Spatial_1 = Spatial_Branch(NUM_BANDS, 16)
+        self.Spatial_2 = Spatial_Branch(16, 32)
+        self.Conv1_1 = conv_1x1(112, NUM_BANDS) # 64, 112
 
     def forward(self, inputs):
         c1, c2, f1 = inputs[2], inputs[0], inputs[1]
 
-        x, f1_1, f1_2, f1_3, f1_4 = self.encoder(c1, c2, f1)
+        c1_1 = self.Conv1(c1)   # [8, 16, 256, 256]
+        c2_1 = self.Conv1(c2)   # [8, 16, 256, 256]
+        f1_1 = self.Conv1(f1)   # [8, 16, 256, 256]
 
-        return self.decoder(x, f1_1, f1_2, f1_3, f1_4)
+        f1_spatial = self.Spatial_1(f1)  # [8, 16, 256, 256]
+
+        # For f_1_amplitude
+        f_1_amplitude = torch.abs(torch.fft.fftn(f1_1))  # [8, 16, 256, 256]
+        # print(f_1_amplitude.shape)  # torch.Size([8, 16, 256, 256])
+
+        # For c1_1_amplitude and c1_1_phase
+        c1_1_amplitude = torch.abs(torch.fft.fftn(c1_1))
+        c1_1_phase = torch.angle(torch.fft.fftn(c1_1))
+        # print(c1_1_phase.shape)  # torch.Size([8, 16, 256, 256])
+
+        # For c2_1_phase
+        c2_1_phase = torch.angle(torch.fft.fftn(c2_1))
+
+        new_1_amplitude = self.Transformer1(c1_1_amplitude, f_1_amplitude)
+        new_1_phase = self.Transformer1(c1_1_phase, c2_1_phase)
+
+        # print(new_1_amplitude.shape)
+
+        # 计算复数的实部和虚部
+        real_part = new_1_amplitude * torch.cos(new_1_phase)
+        imaginary_part = new_1_amplitude * torch.sin(new_1_phase)
+
+        # 将实部和虚部合并成复数
+        complex_spectrum = torch.complex(real_part, imaginary_part)
+
+        # 执行逆傅立叶变换
+        f_reconstructed = torch.abs(torch.fft.ifftn(complex_spectrum))
+        # f_reconstructed = torch.cat((f_reconstructed, f1_1_spatial), dim=1)
+
+        # ----------------------------------
+        c1_2 = self.Conv2(c1_1)
+        c2_2 = self.Conv2(c2_1)
+        f1_2 = self.Conv2(f1_1)
+
+        # f1_2_spatial = self.Spatial_2(f1_1_spatial)
+
+        f_2_amplitude = torch.abs(torch.fft.fftn(f1_2))  # [8, 16, 256, 256]
+
+        c1_2_amplitude = torch.abs(torch.fft.fftn(c1_2))
+        c1_2_phase = torch.angle(torch.fft.fftn(c1_2))
+
+        c2_2_phase = torch.angle(torch.fft.fftn(c2_2))
+
+        new_2_amplitude = self.Transformer2(c1_2_amplitude, f_2_amplitude)
+        new_2_phase = self.Transformer2(c1_2_phase, c2_2_phase)
+
+        real_part = new_2_amplitude * torch.cos(new_2_phase)
+        imaginary_part = new_2_amplitude * torch.sin(new_2_phase)
+
+        complex_spectrum = torch.complex(real_part, imaginary_part)
+
+        f_2_reconstructed = torch.abs(torch.fft.ifftn(complex_spectrum))
+
+        f_reconstructed = torch.cat((f_reconstructed, f_2_reconstructed), dim=1)
+
+        # print(f_reconstructed.shape)
+
+        return self.Conv1_1(torch.cat((f_reconstructed, f1_spatial), dim=1))
 
 class NLayerDiscriminator(nn.Module):
     def __init__(self, input_nc, ndf=64, n_layers=3, norm_layer=nn.BatchNorm2d, use_sigmoid=False, getIntermFeat=False):
@@ -242,7 +300,7 @@ class NLayerDiscriminator(nn.Module):
         self.n_layers = n_layers
 
         kw = 4
-        padw = int(np.ceil((kw-1.0)/2))
+        padw = int(np.ceil((kw - 1.0) / 2))
         sequence = [[nn.Conv2d(input_nc, ndf, kernel_size=kw, stride=2, padding=padw), nn.LeakyReLU(0.2, True)]]
 
         nf = ndf
@@ -269,7 +327,7 @@ class NLayerDiscriminator(nn.Module):
 
         if getIntermFeat:
             for n in range(len(sequence)):
-                setattr(self, 'model'+str(n), nn.Sequential(*sequence[n]))
+                setattr(self, 'model' + str(n), nn.Sequential(*sequence[n]))
         else:
             sequence_stream = []
             for n in range(len(sequence)):
@@ -279,8 +337,8 @@ class NLayerDiscriminator(nn.Module):
     def forward(self, input):
         if self.getIntermFeat:
             res = [input]
-            for n in range(self.n_layers+2):
-                model = getattr(self, 'model'+str(n))
+            for n in range(self.n_layers + 2):
+                model = getattr(self, 'model' + str(n))
                 res.append(model(res[-1]))
             return res[1:]
         else:
@@ -291,8 +349,8 @@ class GANLoss(nn.Module):
     def __init__(self, use_lsgan=True, target_real_label=1.0, target_fake_label=0.0,
                  tensor=torch.cuda.FloatTensor):
         super(GANLoss, self).__init__()
-        self.real_label = target_real_label  # 数据集的label是什么label? 哦！那应该是两张图片的像素块
-        self.fake_label = target_fake_label  #
+        self.real_label = target_real_label
+        self.fake_label = target_fake_label
         self.real_label_var = None
         self.fake_label_var = None
         self.Tensor = tensor
@@ -331,17 +389,11 @@ class GANLoss(nn.Module):
             target_tensor = self.get_target_tensor(input[-1], target_is_real)
             return self.loss(input[-1], target_tensor)
 
+
 if __name__ == "__main__":
     c1 = torch.rand([8, 4, 256, 256])
     c2 = torch.rand([8, 4, 256, 256])
     f = torch.rand([8, 4, 256, 256])
     net = Generator()
-    input = [c2, f, c1]
-    # discriminator = NLayerDiscriminator(input_nc=12, getIntermFeat=True)
-    # re = net([c2, f, c1])
-    # pred_fake = discriminator(torch.cat((re.detach(), f), dim=1))
-    flops, params = profile(net, inputs=(input, ))
-    flops, params = clever_format([flops, params], "%.3f")
-    print("flops", params)
-    print("flops", flops)
+    re = net([c2, f, c1])
 
