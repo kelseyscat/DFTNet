@@ -1,0 +1,1122 @@
+Model initialization
+There are 3487788 trainable parameters for generator.
+There are 2771649 trainable parameters for nlayerdiscriminator.
+Generator(
+  (encoder): InfoExchange(
+    (Res_layer1): Sequential(
+      (0): Conv2d(4, 32, kernel_size=(7, 7), stride=(1, 1), padding=(3, 3))
+      (1): ResBlock(
+        (residual): Sequential(
+          (0): ReflectionPad2d((1, 1, 1, 1))
+          (1): Conv2d(32, 32, kernel_size=(3, 3), stride=(1, 1))
+          (2): Dropout(p=0.5, inplace=False)
+          (3): LeakyReLU(negative_slope=0.01, inplace=True)
+          (4): ReflectionPad2d((1, 1, 1, 1))
+          (5): Conv2d(32, 32, kernel_size=(3, 3), stride=(1, 1))
+          (6): Dropout(p=0.5, inplace=False)
+        )
+      )
+    )
+    (Res_layer2): Sequential(
+      (0): Conv2d(32, 48, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1))
+      (1): ResBlock(
+        (residual): Sequential(
+          (0): ReflectionPad2d((1, 1, 1, 1))
+          (1): Conv2d(48, 48, kernel_size=(3, 3), stride=(1, 1))
+          (2): Dropout(p=0.5, inplace=False)
+          (3): LeakyReLU(negative_slope=0.01, inplace=True)
+          (4): ReflectionPad2d((1, 1, 1, 1))
+          (5): Conv2d(48, 48, kernel_size=(3, 3), stride=(1, 1))
+          (6): Dropout(p=0.5, inplace=False)
+        )
+      )
+    )
+    (Res_layer3): Sequential(
+      (0): Conv2d(48, 64, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1))
+      (1): ResBlock(
+        (residual): Sequential(
+          (0): ReflectionPad2d((1, 1, 1, 1))
+          (1): Conv2d(64, 64, kernel_size=(3, 3), stride=(1, 1))
+          (2): Dropout(p=0.5, inplace=False)
+          (3): LeakyReLU(negative_slope=0.01, inplace=True)
+          (4): ReflectionPad2d((1, 1, 1, 1))
+          (5): Conv2d(64, 64, kernel_size=(3, 3), stride=(1, 1))
+          (6): Dropout(p=0.5, inplace=False)
+        )
+      )
+    )
+    (Res_layer4): Sequential(
+      (0): Conv2d(64, 128, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1))
+      (1): ResBlock(
+        (residual): Sequential(
+          (0): ReflectionPad2d((1, 1, 1, 1))
+          (1): Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1))
+          (2): Dropout(p=0.5, inplace=False)
+          (3): LeakyReLU(negative_slope=0.01, inplace=True)
+          (4): ReflectionPad2d((1, 1, 1, 1))
+          (5): Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1))
+          (6): Dropout(p=0.5, inplace=False)
+        )
+      )
+    )
+    (ConcatConv1): Sequential(
+      (0): Conv2d(64, 32, kernel_size=(1, 1), stride=(1, 1))
+      (1): BatchNorm2d(32, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (2): ReLU(inplace=True)
+    )
+    (ConcatConv2): Sequential(
+      (0): Conv2d(96, 48, kernel_size=(1, 1), stride=(1, 1))
+      (1): BatchNorm2d(48, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (2): ReLU(inplace=True)
+    )
+    (ConcatConv3): Sequential(
+      (0): Conv2d(128, 64, kernel_size=(1, 1), stride=(1, 1))
+      (1): BatchNorm2d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (2): ReLU(inplace=True)
+    )
+    (ConcatConv4): Sequential(
+      (0): Conv2d(256, 128, kernel_size=(1, 1), stride=(1, 1))
+      (1): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (2): ReLU(inplace=True)
+    )
+    (timeInfo1): TFF(
+      (catconvA): Sequential(
+        (0): Conv2d(64, 32, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+        (1): BatchNorm2d(32, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (2): ReLU(inplace=True)
+      )
+      (catconvB): Sequential(
+        (0): Conv2d(64, 32, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+        (1): BatchNorm2d(32, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (2): ReLU(inplace=True)
+      )
+      (catconv): Sequential(
+        (0): Conv2d(96, 32, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+        (1): BatchNorm2d(32, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (2): ReLU(inplace=True)
+      )
+      (convA): Conv2d(32, 1, kernel_size=(1, 1), stride=(1, 1))
+      (convB): Conv2d(32, 1, kernel_size=(1, 1), stride=(1, 1))
+      (sigmoid): Sigmoid()
+    )
+    (timeInfo2): TFF(
+      (catconvA): Sequential(
+        (0): Conv2d(96, 48, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+        (1): BatchNorm2d(48, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (2): ReLU(inplace=True)
+      )
+      (catconvB): Sequential(
+        (0): Conv2d(96, 48, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+        (1): BatchNorm2d(48, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (2): ReLU(inplace=True)
+      )
+      (catconv): Sequential(
+        (0): Conv2d(144, 48, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+        (1): BatchNorm2d(48, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (2): ReLU(inplace=True)
+      )
+      (convA): Conv2d(48, 1, kernel_size=(1, 1), stride=(1, 1))
+      (convB): Conv2d(48, 1, kernel_size=(1, 1), stride=(1, 1))
+      (sigmoid): Sigmoid()
+    )
+    (timeInfo3): TFF(
+      (catconvA): Sequential(
+        (0): Conv2d(128, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+        (1): BatchNorm2d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (2): ReLU(inplace=True)
+      )
+      (catconvB): Sequential(
+        (0): Conv2d(128, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+        (1): BatchNorm2d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (2): ReLU(inplace=True)
+      )
+      (catconv): Sequential(
+        (0): Conv2d(192, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+        (1): BatchNorm2d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (2): ReLU(inplace=True)
+      )
+      (convA): Conv2d(64, 1, kernel_size=(1, 1), stride=(1, 1))
+      (convB): Conv2d(64, 1, kernel_size=(1, 1), stride=(1, 1))
+      (sigmoid): Sigmoid()
+    )
+    (timeInfo4): TFF(
+      (catconvA): Sequential(
+        (0): Conv2d(256, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+        (1): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (2): ReLU(inplace=True)
+      )
+      (catconvB): Sequential(
+        (0): Conv2d(256, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+        (1): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (2): ReLU(inplace=True)
+      )
+      (catconv): Sequential(
+        (0): Conv2d(384, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+        (1): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (2): ReLU(inplace=True)
+      )
+      (convA): Conv2d(128, 1, kernel_size=(1, 1), stride=(1, 1))
+      (convB): Conv2d(128, 1, kernel_size=(1, 1), stride=(1, 1))
+      (sigmoid): Sigmoid()
+    )
+  )
+  (decoder): Decoder(
+    (upsample1): Sequential(
+      (0): Conv2d(384, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+      (1): PixelShuffle(upscale_factor=2)
+      (2): LeakyReLU(negative_slope=0.1, inplace=True)
+    )
+    (upsample2): Sequential(
+      (0): Conv2d(192, 192, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+      (1): PixelShuffle(upscale_factor=2)
+      (2): LeakyReLU(negative_slope=0.1, inplace=True)
+    )
+    (upsample3): Sequential(
+      (0): Conv2d(144, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+      (1): PixelShuffle(upscale_factor=2)
+      (2): LeakyReLU(negative_slope=0.1, inplace=True)
+    )
+    (conv): Conv2d(96, 4, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+  )
+)
+NLayerDiscriminator(
+  (model0): Sequential(
+    (0): Conv2d(8, 64, kernel_size=(4, 4), stride=(2, 2), padding=(2, 2))
+    (1): LeakyReLU(negative_slope=0.2, inplace=True)
+  )
+  (model1): Sequential(
+    (0): Conv2d(64, 128, kernel_size=(4, 4), stride=(2, 2), padding=(2, 2))
+    (1): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (2): LeakyReLU(negative_slope=0.2, inplace=True)
+  )
+  (model2): Sequential(
+    (0): Conv2d(128, 256, kernel_size=(4, 4), stride=(2, 2), padding=(2, 2))
+    (1): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (2): LeakyReLU(negative_slope=0.2, inplace=True)
+  )
+  (model3): Sequential(
+    (0): Conv2d(256, 512, kernel_size=(4, 4), stride=(1, 1), padding=(2, 2))
+    (1): BatchNorm2d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (2): LeakyReLU(negative_slope=0.2, inplace=True)
+  )
+  (model4): Sequential(
+    (0): Conv2d(512, 1, kernel_size=(4, 4), stride=(1, 1), padding=(2, 2))
+  )
+)
+Loading data...
+Training...
+Learning rate for Generator: 0.0002
+Learning rate for Discriminator: 0.0002
+Epoch[0] - 2023-05-29 01:25:11.300709
+Epoch[0 0/72] - G-Loss: 1.987669 - PD-Loss: 0.637940 - MSE: 0.036223 - Time: 5.3182354010641575s
+Epoch[0 1/72] - G-Loss: 1.328862 - PD-Loss: 3.129732 - MSE: 0.026885 - Time: 0.28377695893868804s
+Epoch[0 2/72] - G-Loss: 0.947947 - PD-Loss: 0.752834 - MSE: 0.019366 - Time: 0.28450702293775976s
+Epoch[0 3/72] - G-Loss: 0.691124 - PD-Loss: 1.190151 - MSE: 0.016731 - Time: 0.2611575369955972s
+Epoch[0 4/72] - G-Loss: 0.619096 - PD-Loss: 0.537817 - MSE: 0.014713 - Time: 0.25755072804167867s
+Epoch[0 5/72] - G-Loss: 0.599742 - PD-Loss: 0.856225 - MSE: 0.012364 - Time: 0.26081905991304666s
+Epoch[0 6/72] - G-Loss: 0.406808 - PD-Loss: 0.561757 - MSE: 0.008970 - Time: 0.2651828459929675s
+Epoch[0 7/72] - G-Loss: 0.429796 - PD-Loss: 0.450478 - MSE: 0.010383 - Time: 0.25845532200764865s
+Epoch[0 8/72] - G-Loss: 0.386100 - PD-Loss: 0.473270 - MSE: 0.009176 - Time: 0.27069258294068277s
+Epoch[0 9/72] - G-Loss: 0.361077 - PD-Loss: 0.400327 - MSE: 0.008509 - Time: 0.2598479490261525s
+Epoch[0 10/72] - G-Loss: 0.253722 - PD-Loss: 0.410830 - MSE: 0.005098 - Time: 0.28712564799934626s
+Epoch[0 11/72] - G-Loss: 0.245064 - PD-Loss: 0.422797 - MSE: 0.003710 - Time: 0.2837565019726753s
+Epoch[0 12/72] - G-Loss: 0.245279 - PD-Loss: 0.345325 - MSE: 0.003858 - Time: 0.2582811570027843s
+Epoch[0 13/72] - G-Loss: 0.230494 - PD-Loss: 0.330252 - MSE: 0.003171 - Time: 0.26553235691972077s
+Epoch[0 14/72] - G-Loss: 0.237942 - PD-Loss: 0.309127 - MSE: 0.003164 - Time: 0.2582211809931323s
+Epoch[0 15/72] - G-Loss: 0.207758 - PD-Loss: 0.319198 - MSE: 0.002495 - Time: 0.2766373469494283s
+Epoch[0 16/72] - G-Loss: 0.228158 - PD-Loss: 0.300617 - MSE: 0.002651 - Time: 0.2700423240894452s
+Epoch[0 17/72] - G-Loss: 0.209074 - PD-Loss: 0.297083 - MSE: 0.003144 - Time: 0.2619000799022615s
+Epoch[0 18/72] - G-Loss: 0.257315 - PD-Loss: 0.306255 - MSE: 0.003059 - Time: 0.28056654008105397s
+Epoch[0 19/72] - G-Loss: 0.216108 - PD-Loss: 0.293928 - MSE: 0.002853 - Time: 0.2869325120700523s
+Epoch[0 20/72] - G-Loss: 0.171697 - PD-Loss: 0.282573 - MSE: 0.001883 - Time: 0.28207324002869427s
+Epoch[0 21/72] - G-Loss: 0.175037 - PD-Loss: 0.264631 - MSE: 0.002171 - Time: 0.2842191680101678s
+Epoch[0 22/72] - G-Loss: 0.158493 - PD-Loss: 0.265359 - MSE: 0.001646 - Time: 0.2613221389474347s
+Epoch[0 23/72] - G-Loss: 0.153822 - PD-Loss: 0.268638 - MSE: 0.001819 - Time: 0.269495802000165s
+Epoch[0 24/72] - G-Loss: 0.133762 - PD-Loss: 0.273681 - MSE: 0.001628 - Time: 0.27905382902827114s
+Epoch[0 25/72] - G-Loss: 0.137092 - PD-Loss: 0.257019 - MSE: 0.001653 - Time: 0.25878994003869593s
+Epoch[0 26/72] - G-Loss: 0.211249 - PD-Loss: 0.251079 - MSE: 0.002728 - Time: 0.2652975890086964s
+Epoch[0 27/72] - G-Loss: 0.148674 - PD-Loss: 0.249278 - MSE: 0.001860 - Time: 0.26295101596042514s
+Epoch[0 28/72] - G-Loss: 0.140802 - PD-Loss: 0.251951 - MSE: 0.001622 - Time: 0.25854798406362534s
+Epoch[0 29/72] - G-Loss: 0.128906 - PD-Loss: 0.248452 - MSE: 0.001481 - Time: 0.29082693508826196s
+Epoch[0 30/72] - G-Loss: 0.139139 - PD-Loss: 0.246531 - MSE: 0.001471 - Time: 0.28630638599861413s
+Epoch[0 31/72] - G-Loss: 0.126123 - PD-Loss: 0.251301 - MSE: 0.001369 - Time: 0.28563433792442083s
+Epoch[0 32/72] - G-Loss: 0.139801 - PD-Loss: 0.241147 - MSE: 0.001548 - Time: 0.3351871980121359s
+Epoch[0 33/72] - G-Loss: 0.160315 - PD-Loss: 0.241406 - MSE: 0.001694 - Time: 0.2766159139573574s
+Epoch[0 34/72] - G-Loss: 0.156608 - PD-Loss: 0.243079 - MSE: 0.001900 - Time: 0.2919299809727818s
+Epoch[0 35/72] - G-Loss: 0.144316 - PD-Loss: 0.244743 - MSE: 0.001774 - Time: 0.2772622109623626s
+Epoch[0 36/72] - G-Loss: 0.122126 - PD-Loss: 0.236984 - MSE: 0.001422 - Time: 0.2770766520407051s
+Epoch[0 37/72] - G-Loss: 0.109005 - PD-Loss: 0.240163 - MSE: 0.001235 - Time: 0.2746221129782498s
+Epoch[0 38/72] - G-Loss: 0.129059 - PD-Loss: 0.238095 - MSE: 0.001571 - Time: 0.2752785780467093s
+Epoch[0 39/72] - G-Loss: 0.147801 - PD-Loss: 0.245973 - MSE: 0.001617 - Time: 0.26528835599310696s
+Epoch[0 40/72] - G-Loss: 0.111691 - PD-Loss: 0.237848 - MSE: 0.001275 - Time: 0.31133695889730006s
+Epoch[0 41/72] - G-Loss: 0.120636 - PD-Loss: 0.227294 - MSE: 0.001367 - Time: 0.297235551988706s
+Epoch[0 42/72] - G-Loss: 0.111061 - PD-Loss: 0.229370 - MSE: 0.001348 - Time: 0.2684491489781067s
+Epoch[0 43/72] - G-Loss: 0.117792 - PD-Loss: 0.233386 - MSE: 0.001383 - Time: 0.29060733190272003s
+Epoch[0 44/72] - G-Loss: 0.117711 - PD-Loss: 0.231824 - MSE: 0.001293 - Time: 0.28635747102089226s
+Epoch[0 45/72] - G-Loss: 0.114054 - PD-Loss: 0.232747 - MSE: 0.001221 - Time: 0.26215628592763096s
+Epoch[0 46/72] - G-Loss: 0.133750 - PD-Loss: 0.226259 - MSE: 0.001559 - Time: 0.267607903922908s
+Epoch[0 47/72] - G-Loss: 0.110422 - PD-Loss: 0.221201 - MSE: 0.001241 - Time: 0.2901691000442952s
+Epoch[0 48/72] - G-Loss: 0.105117 - PD-Loss: 0.224194 - MSE: 0.001142 - Time: 0.2848700010217726s
+Epoch[0 49/72] - G-Loss: 0.096156 - PD-Loss: 0.217900 - MSE: 0.001137 - Time: 0.2770666889846325s
+Epoch[0 50/72] - G-Loss: 0.092220 - PD-Loss: 0.215194 - MSE: 0.000934 - Time: 0.2795920619973913s
+Epoch[0 51/72] - G-Loss: 0.108795 - PD-Loss: 0.217736 - MSE: 0.001230 - Time: 0.27948579797521234s
+Epoch[0 52/72] - G-Loss: 0.117441 - PD-Loss: 0.215312 - MSE: 0.001413 - Time: 0.28501210105605423s
+Epoch[0 53/72] - G-Loss: 0.106245 - PD-Loss: 0.213269 - MSE: 0.001079 - Time: 0.2847400070168078s
+Epoch[0 54/72] - G-Loss: 0.108274 - PD-Loss: 0.199998 - MSE: 0.001371 - Time: 0.26718405296560377s
+Epoch[0 55/72] - G-Loss: 0.107186 - PD-Loss: 0.205162 - MSE: 0.001190 - Time: 0.2671777990180999s
+Epoch[0 56/72] - G-Loss: 0.090924 - PD-Loss: 0.204484 - MSE: 0.000963 - Time: 0.26122190698515624s
+Epoch[0 57/72] - G-Loss: 0.088823 - PD-Loss: 0.198474 - MSE: 0.001000 - Time: 0.2590647869510576s
+Epoch[0 58/72] - G-Loss: 0.101643 - PD-Loss: 0.205247 - MSE: 0.001011 - Time: 0.28276709595229477s
+Epoch[0 59/72] - G-Loss: 0.091724 - PD-Loss: 0.201015 - MSE: 0.000964 - Time: 0.26517759799025953s
+Epoch[0 60/72] - G-Loss: 0.101238 - PD-Loss: 0.192338 - MSE: 0.001075 - Time: 0.27657319395802915s
+Epoch[0 61/72] - G-Loss: 0.085939 - PD-Loss: 0.184947 - MSE: 0.000944 - Time: 0.2604889050126076s
+Epoch[0 62/72] - G-Loss: 0.094949 - PD-Loss: 0.184575 - MSE: 0.001005 - Time: 0.2732948299963027s
+Epoch[0 63/72] - G-Loss: 0.101420 - PD-Loss: 0.181033 - MSE: 0.001042 - Time: 0.2598558770259842s
+Epoch[0 64/72] - G-Loss: 0.098162 - PD-Loss: 0.181028 - MSE: 0.001075 - Time: 0.28429887106176466s
+Epoch[0 65/72] - G-Loss: 0.087929 - PD-Loss: 0.170261 - MSE: 0.000840 - Time: 0.27189532993361354s
+Epoch[0 66/72] - G-Loss: 0.079471 - PD-Loss: 0.163332 - MSE: 0.000791 - Time: 0.2950127529911697s
+Epoch[0 67/72] - G-Loss: 0.125440 - PD-Loss: 0.165470 - MSE: 0.001327 - Time: 0.2951639740495011s
+Epoch[0 68/72] - G-Loss: 0.078967 - PD-Loss: 0.152986 - MSE: 0.000809 - Time: 0.2918441820656881s
+Epoch[0 69/72] - G-Loss: 0.093755 - PD-Loss: 0.153053 - MSE: 0.000843 - Time: 0.30795597995165735s
+Epoch[0 70/72] - G-Loss: 0.129369 - PD-Loss: 0.144490 - MSE: 0.001363 - Time: 0.30958278803154826s
+Epoch[0 71/72] - G-Loss: 0.093636 - PD-Loss: 0.150910 - MSE: 0.000943 - Time: 0.2760057409759611s
+Epoch[0] - 2023-05-29 01:28:12.937444
+0.8656178984694853
+Learning rate for Generator: 0.0002
+Learning rate for Discriminator: 0.0002
+Epoch[1] - 2023-05-29 01:29:03.291988
+Epoch[1 0/72] - G-Loss: 0.099346 - PD-Loss: 0.133029 - MSE: 0.000989 - Time: 0.30007075995672494s
+Epoch[1 1/72] - G-Loss: 0.098002 - PD-Loss: 0.132725 - MSE: 0.000930 - Time: 0.2874842609744519s
+Epoch[1 2/72] - G-Loss: 0.090195 - PD-Loss: 0.109156 - MSE: 0.000953 - Time: 0.29024408897385s
+Epoch[1 3/72] - G-Loss: 0.083591 - PD-Loss: 0.115211 - MSE: 0.000961 - Time: 0.29877940902952105s
+Epoch[1 4/72] - G-Loss: 0.115324 - PD-Loss: 0.108177 - MSE: 0.001278 - Time: 0.2901263899402693s
+Epoch[1 5/72] - G-Loss: 0.101019 - PD-Loss: 0.100448 - MSE: 0.000946 - Time: 0.2797031580703333s
+Epoch[1 6/72] - G-Loss: 0.102164 - PD-Loss: 0.093482 - MSE: 0.000998 - Time: 0.28039323596749455s
+Epoch[1 7/72] - G-Loss: 0.110164 - PD-Loss: 0.090478 - MSE: 0.001009 - Time: 0.3031932479934767s
+Epoch[1 8/72] - G-Loss: 0.111334 - PD-Loss: 0.076812 - MSE: 0.001186 - Time: 0.30146985698956996s
+Epoch[1 9/72] - G-Loss: 0.112006 - PD-Loss: 0.083868 - MSE: 0.001158 - Time: 0.28803882701322436s
+Epoch[1 10/72] - G-Loss: 0.098025 - PD-Loss: 0.070674 - MSE: 0.000940 - Time: 0.3004532230552286s
+Epoch[1 11/72] - G-Loss: 0.109446 - PD-Loss: 0.063765 - MSE: 0.001044 - Time: 0.29236747208051383s
+Epoch[1 12/72] - G-Loss: 0.095685 - PD-Loss: 0.053257 - MSE: 0.000871 - Time: 0.30721880099736154s
+Epoch[1 13/72] - G-Loss: 0.093093 - PD-Loss: 0.060590 - MSE: 0.000833 - Time: 0.29971364000812173s
+Epoch[1 14/72] - G-Loss: 0.101685 - PD-Loss: 0.055957 - MSE: 0.000990 - Time: 0.29886802297551185s
+Epoch[1 15/72] - G-Loss: 0.119885 - PD-Loss: 0.053468 - MSE: 0.001200 - Time: 0.2930219010449946s
+Epoch[1 16/72] - G-Loss: 0.082330 - PD-Loss: 0.042456 - MSE: 0.000792 - Time: 0.29026921396143734s
+Epoch[1 17/72] - G-Loss: 0.114112 - PD-Loss: 0.044719 - MSE: 0.001342 - Time: 0.2924527380382642s
+Epoch[1 18/72] - G-Loss: 0.083836 - PD-Loss: 0.036785 - MSE: 0.000788 - Time: 0.285041262046434s
+Epoch[1 19/72] - G-Loss: 0.084854 - PD-Loss: 0.028944 - MSE: 0.000844 - Time: 0.30043385399039835s
+Epoch[1 20/72] - G-Loss: 0.116009 - PD-Loss: 0.035194 - MSE: 0.001241 - Time: 0.3028178650420159s
+Epoch[1 21/72] - G-Loss: 0.089877 - PD-Loss: 0.031959 - MSE: 0.000901 - Time: 0.31179127597715706s
+Epoch[1 22/72] - G-Loss: 0.097694 - PD-Loss: 0.025956 - MSE: 0.000998 - Time: 0.2822526100790128s
+Epoch[1 23/72] - G-Loss: 0.089120 - PD-Loss: 0.033019 - MSE: 0.000878 - Time: 0.29790647490881383s
+Epoch[1 24/72] - G-Loss: 0.077714 - PD-Loss: 0.026651 - MSE: 0.000756 - Time: 0.2898711389862001s
+Epoch[1 25/72] - G-Loss: 0.085325 - PD-Loss: 0.021201 - MSE: 0.000834 - Time: 0.29944589105434716s
+Epoch[1 26/72] - G-Loss: 0.090952 - PD-Loss: 0.025593 - MSE: 0.000848 - Time: 0.3054704760434106s
+Epoch[1 27/72] - G-Loss: 0.101788 - PD-Loss: 0.020089 - MSE: 0.001052 - Time: 0.3053525199647993s
+Epoch[1 28/72] - G-Loss: 0.096445 - PD-Loss: 0.023612 - MSE: 0.000907 - Time: 0.29611375706736s
+Epoch[1 29/72] - G-Loss: 0.089217 - PD-Loss: 0.022277 - MSE: 0.000782 - Time: 0.2824705969542265s
+Epoch[1 30/72] - G-Loss: 0.087797 - PD-Loss: 0.019227 - MSE: 0.000737 - Time: 0.2954267669701949s
+Epoch[1 31/72] - G-Loss: 0.093523 - PD-Loss: 0.020564 - MSE: 0.000904 - Time: 0.3277885689167306s
+Epoch[1 32/72] - G-Loss: 0.103500 - PD-Loss: 0.021655 - MSE: 0.001100 - Time: 0.30608169292099774s
+Epoch[1 33/72] - G-Loss: 0.103132 - PD-Loss: 0.020629 - MSE: 0.000950 - Time: 0.29009676608256996s
+Epoch[1 34/72] - G-Loss: 0.089627 - PD-Loss: 0.017384 - MSE: 0.000732 - Time: 0.3150223980192095s
+Epoch[1 35/72] - G-Loss: 0.093572 - PD-Loss: 0.020948 - MSE: 0.000827 - Time: 0.31289096095133573s
+Epoch[1 36/72] - G-Loss: 0.087593 - PD-Loss: 0.019415 - MSE: 0.000786 - Time: 0.30754527705721557s
+Epoch[1 37/72] - G-Loss: 0.111598 - PD-Loss: 0.017564 - MSE: 0.001024 - Time: 0.2908706300659105s
+Epoch[1 38/72] - G-Loss: 0.095434 - PD-Loss: 0.019870 - MSE: 0.000881 - Time: 0.28791526099666953s
+Epoch[1 39/72] - G-Loss: 0.087923 - PD-Loss: 0.021188 - MSE: 0.000859 - Time: 0.29053936898708344s
+Epoch[1 40/72] - G-Loss: 0.092936 - PD-Loss: 0.025325 - MSE: 0.000887 - Time: 0.27694274694658816s
+Epoch[1 41/72] - G-Loss: 0.084645 - PD-Loss: 0.035221 - MSE: 0.000895 - Time: 0.2975051690591499s
+Epoch[1 42/72] - G-Loss: 0.087876 - PD-Loss: 0.028604 - MSE: 0.000844 - Time: 0.2862586349947378s
+Epoch[1 43/72] - G-Loss: 0.086908 - PD-Loss: 0.066681 - MSE: 0.000822 - Time: 0.29565993696451187s
+Epoch[1 44/72] - G-Loss: 0.091363 - PD-Loss: 0.081301 - MSE: 0.000941 - Time: 0.2863890929147601s
+Epoch[1 45/72] - G-Loss: 0.105380 - PD-Loss: 0.129931 - MSE: 0.000973 - Time: 0.29540025896858424s
+Epoch[1 46/72] - G-Loss: 0.092493 - PD-Loss: 0.229814 - MSE: 0.000905 - Time: 0.29271613201126456s
+Epoch[1 47/72] - G-Loss: 0.078248 - PD-Loss: 0.261930 - MSE: 0.000845 - Time: 0.3178682590369135s
+Epoch[1 48/72] - G-Loss: 0.086566 - PD-Loss: 0.307464 - MSE: 0.001060 - Time: 0.29960862803272903s
+Epoch[1 49/72] - G-Loss: 0.099931 - PD-Loss: 0.254395 - MSE: 0.001254 - Time: 0.29667143197730184s
+Epoch[1 50/72] - G-Loss: 0.095192 - PD-Loss: 0.214576 - MSE: 0.001333 - Time: 0.3027703940169886s
+Epoch[1 51/72] - G-Loss: 0.087040 - PD-Loss: 0.157528 - MSE: 0.001194 - Time: 0.3006332840304822s
+Epoch[1 52/72] - G-Loss: 0.093625 - PD-Loss: 0.135781 - MSE: 0.001378 - Time: 0.30266304302494973s
+Epoch[1 53/72] - G-Loss: 0.089321 - PD-Loss: 0.099257 - MSE: 0.001303 - Time: 0.29090031306259334s
+Epoch[1 54/72] - G-Loss: 0.086766 - PD-Loss: 0.102444 - MSE: 0.001458 - Time: 0.31482417904771864s
+Epoch[1 55/72] - G-Loss: 0.094010 - PD-Loss: 0.075340 - MSE: 0.001362 - Time: 0.29194346303120255s
+Epoch[1 56/72] - G-Loss: 0.101342 - PD-Loss: 0.063147 - MSE: 0.001369 - Time: 0.28682668099645525s
+Epoch[1 57/72] - G-Loss: 0.091487 - PD-Loss: 0.059141 - MSE: 0.001155 - Time: 0.31972922198474407s
+Epoch[1 58/72] - G-Loss: 0.094453 - PD-Loss: 0.052984 - MSE: 0.001254 - Time: 0.2997215309878811s
+Epoch[1 59/72] - G-Loss: 0.084831 - PD-Loss: 0.053039 - MSE: 0.000954 - Time: 0.2966795010725036s
+Epoch[1 60/72] - G-Loss: 0.084715 - PD-Loss: 0.043187 - MSE: 0.000935 - Time: 0.29909832403063774s
+Epoch[1 61/72] - G-Loss: 0.086334 - PD-Loss: 0.044811 - MSE: 0.001033 - Time: 0.29914206999819726s
+Epoch[1 62/72] - G-Loss: 0.090345 - PD-Loss: 0.043775 - MSE: 0.000973 - Time: 0.2681552699068561s
+Epoch[1 63/72] - G-Loss: 0.088970 - PD-Loss: 0.055055 - MSE: 0.000905 - Time: 0.29677137499675155s
+Epoch[1 64/72] - G-Loss: 0.092801 - PD-Loss: 0.051909 - MSE: 0.000895 - Time: 0.2964567629387602s
+Epoch[1 65/72] - G-Loss: 0.091068 - PD-Loss: 0.054410 - MSE: 0.000782 - Time: 0.3087272619595751s
+Epoch[1 66/72] - G-Loss: 0.096907 - PD-Loss: 0.049576 - MSE: 0.000823 - Time: 0.277238532085903s
+Epoch[1 67/72] - G-Loss: 0.100533 - PD-Loss: 0.064530 - MSE: 0.000854 - Time: 0.28733238705899566s
+Epoch[1 68/72] - G-Loss: 0.106595 - PD-Loss: 0.070023 - MSE: 0.001028 - Time: 0.2838812150293961s
+Epoch[1 69/72] - G-Loss: 0.084843 - PD-Loss: 0.063741 - MSE: 0.000725 - Time: 0.2898376729572192s
+Epoch[1 70/72] - G-Loss: 0.095530 - PD-Loss: 0.112311 - MSE: 0.000919 - Time: 0.28997898497618735s
+Epoch[1 71/72] - G-Loss: 0.075838 - PD-Loss: 0.103514 - MSE: 0.000705 - Time: 0.3068550929892808s
+Epoch[1] - 2023-05-29 01:32:03.743220
+0.8756525773203377
+Learning rate for Generator: 0.0002
+Learning rate for Discriminator: 0.0002
+Epoch[2] - 2023-05-29 01:32:55.113895
+Epoch[2 0/72] - G-Loss: 0.089287 - PD-Loss: 0.106410 - MSE: 0.000756 - Time: 0.2920511099509895s
+Epoch[2 1/72] - G-Loss: 0.082880 - PD-Loss: 0.165560 - MSE: 0.000798 - Time: 0.2993776679504663s
+Epoch[2 2/72] - G-Loss: 0.106409 - PD-Loss: 0.195501 - MSE: 0.000981 - Time: 0.305261546978727s
+Epoch[2 3/72] - G-Loss: 0.117727 - PD-Loss: 0.196626 - MSE: 0.001219 - Time: 0.29319865198340267s
+Epoch[2 4/72] - G-Loss: 0.084775 - PD-Loss: 0.258812 - MSE: 0.000894 - Time: 0.2975552980788052s
+Epoch[2 5/72] - G-Loss: 0.081809 - PD-Loss: 0.262407 - MSE: 0.000832 - Time: 0.3121761929942295s
+Epoch[2 6/72] - G-Loss: 0.087783 - PD-Loss: 0.243495 - MSE: 0.000930 - Time: 0.3071406469680369s
+Epoch[2 7/72] - G-Loss: 0.083053 - PD-Loss: 0.260762 - MSE: 0.000951 - Time: 0.3017983060562983s
+Epoch[2 8/72] - G-Loss: 0.075089 - PD-Loss: 0.220389 - MSE: 0.000923 - Time: 0.2901367290178314s
+Epoch[2 9/72] - G-Loss: 0.079361 - PD-Loss: 0.176953 - MSE: 0.001030 - Time: 0.2887984069529921s
+Epoch[2 10/72] - G-Loss: 0.091817 - PD-Loss: 0.148192 - MSE: 0.001313 - Time: 0.30063012009486556s
+Epoch[2 11/72] - G-Loss: 0.088477 - PD-Loss: 0.128839 - MSE: 0.001282 - Time: 0.30235581705346704s
+Epoch[2 12/72] - G-Loss: 0.084324 - PD-Loss: 0.099823 - MSE: 0.001302 - Time: 0.28473541501443833s
+Epoch[2 13/72] - G-Loss: 0.090227 - PD-Loss: 0.083621 - MSE: 0.001165 - Time: 0.3118251489941031s
+Epoch[2 14/72] - G-Loss: 0.097657 - PD-Loss: 0.076182 - MSE: 0.001352 - Time: 0.29836864001117647s
+Epoch[2 15/72] - G-Loss: 0.096196 - PD-Loss: 0.073430 - MSE: 0.001255 - Time: 0.2894531049532816s
+Epoch[2 16/72] - G-Loss: 0.082403 - PD-Loss: 0.057857 - MSE: 0.001166 - Time: 0.2807017050217837s
+Epoch[2 17/72] - G-Loss: 0.080461 - PD-Loss: 0.060442 - MSE: 0.001016 - Time: 0.2948535759933293s
+Epoch[2 18/72] - G-Loss: 0.101591 - PD-Loss: 0.056927 - MSE: 0.001234 - Time: 0.28151822998188436s
+Epoch[2 19/72] - G-Loss: 0.073266 - PD-Loss: 0.043512 - MSE: 0.000811 - Time: 0.30429954698774964s
+Epoch[2 20/72] - G-Loss: 0.082629 - PD-Loss: 0.054175 - MSE: 0.000834 - Time: 0.29932409001048654s
+Epoch[2 21/72] - G-Loss: 0.063500 - PD-Loss: 0.041677 - MSE: 0.000727 - Time: 0.2935880799777806s
+Epoch[2 22/72] - G-Loss: 0.079785 - PD-Loss: 0.041151 - MSE: 0.000783 - Time: 0.29675300791859627s
+Epoch[2 23/72] - G-Loss: 0.087901 - PD-Loss: 0.035208 - MSE: 0.000928 - Time: 0.2977465100120753s
+Epoch[2 24/72] - G-Loss: 0.085914 - PD-Loss: 0.031082 - MSE: 0.000738 - Time: 0.30199137900490314s
+Epoch[2 25/72] - G-Loss: 0.101229 - PD-Loss: 0.043245 - MSE: 0.000922 - Time: 0.30388120899442583s
+Epoch[2 26/72] - G-Loss: 0.072363 - PD-Loss: 0.034004 - MSE: 0.000617 - Time: 0.28151680703740567s
+Epoch[2 27/72] - G-Loss: 0.078134 - PD-Loss: 0.025100 - MSE: 0.000720 - Time: 0.297836979967542s
+Epoch[2 28/72] - G-Loss: 0.103895 - PD-Loss: 0.029581 - MSE: 0.000971 - Time: 0.2810946248937398s
+Epoch[2 29/72] - G-Loss: 0.081165 - PD-Loss: 0.026697 - MSE: 0.000641 - Time: 0.28263675898779184s
+Epoch[2 30/72] - G-Loss: 0.072042 - PD-Loss: 0.022219 - MSE: 0.000589 - Time: 0.28802339104004204s
+Epoch[2 31/72] - G-Loss: 0.069108 - PD-Loss: 0.030746 - MSE: 0.000562 - Time: 0.28461417800281197s
+Model initialization
+There are 4960908 trainable parameters for generator.
+There are 2771649 trainable parameters for nlayerdiscriminator.
+Generator(
+  (encoder): InfoExchange(
+    (Res_layer1): Sequential(
+      (0): Conv2d(4, 32, kernel_size=(7, 7), stride=(1, 1), padding=(3, 3))
+      (1): ResBlock(
+        (residual): Sequential(
+          (0): ReflectionPad2d((1, 1, 1, 1))
+          (1): Conv2d(32, 32, kernel_size=(3, 3), stride=(1, 1))
+          (2): Dropout(p=0.5, inplace=False)
+          (3): LeakyReLU(negative_slope=0.01, inplace=True)
+          (4): ReflectionPad2d((1, 1, 1, 1))
+          (5): Conv2d(32, 32, kernel_size=(3, 3), stride=(1, 1))
+          (6): Dropout(p=0.5, inplace=False)
+        )
+      )
+    )
+    (Res_layer2): Sequential(
+      (0): Conv2d(32, 64, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1))
+      (1): ResBlock(
+        (residual): Sequential(
+          (0): ReflectionPad2d((1, 1, 1, 1))
+          (1): Conv2d(64, 64, kernel_size=(3, 3), stride=(1, 1))
+          (2): Dropout(p=0.5, inplace=False)
+          (3): LeakyReLU(negative_slope=0.01, inplace=True)
+          (4): ReflectionPad2d((1, 1, 1, 1))
+          (5): Conv2d(64, 64, kernel_size=(3, 3), stride=(1, 1))
+          (6): Dropout(p=0.5, inplace=False)
+        )
+      )
+    )
+    (Res_layer3): Sequential(
+      (0): Conv2d(64, 96, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1))
+      (1): ResBlock(
+        (residual): Sequential(
+          (0): ReflectionPad2d((1, 1, 1, 1))
+          (1): Conv2d(96, 96, kernel_size=(3, 3), stride=(1, 1))
+          (2): Dropout(p=0.5, inplace=False)
+          (3): LeakyReLU(negative_slope=0.01, inplace=True)
+          (4): ReflectionPad2d((1, 1, 1, 1))
+          (5): Conv2d(96, 96, kernel_size=(3, 3), stride=(1, 1))
+          (6): Dropout(p=0.5, inplace=False)
+        )
+      )
+    )
+    (Res_layer4): Sequential(
+      (0): Conv2d(96, 128, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1))
+      (1): ResBlock(
+        (residual): Sequential(
+          (0): ReflectionPad2d((1, 1, 1, 1))
+          (1): Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1))
+          (2): Dropout(p=0.5, inplace=False)
+          (3): LeakyReLU(negative_slope=0.01, inplace=True)
+          (4): ReflectionPad2d((1, 1, 1, 1))
+          (5): Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1))
+          (6): Dropout(p=0.5, inplace=False)
+        )
+      )
+    )
+    (ConcatConv1): Sequential(
+      (0): Conv2d(64, 32, kernel_size=(1, 1), stride=(1, 1))
+      (1): BatchNorm2d(32, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (2): ReLU(inplace=True)
+    )
+    (ConcatConv2): Sequential(
+      (0): Conv2d(128, 64, kernel_size=(1, 1), stride=(1, 1))
+      (1): BatchNorm2d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (2): ReLU(inplace=True)
+    )
+    (ConcatConv3): Sequential(
+      (0): Conv2d(192, 96, kernel_size=(1, 1), stride=(1, 1))
+      (1): BatchNorm2d(96, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (2): ReLU(inplace=True)
+    )
+    (ConcatConv4): Sequential(
+      (0): Conv2d(256, 128, kernel_size=(1, 1), stride=(1, 1))
+      (1): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (2): ReLU(inplace=True)
+    )
+    (timeInfo1): TFF(
+      (catconvA): Sequential(
+        (0): Conv2d(64, 32, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+        (1): BatchNorm2d(32, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (2): ReLU(inplace=True)
+      )
+      (catconvB): Sequential(
+        (0): Conv2d(64, 32, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+        (1): BatchNorm2d(32, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (2): ReLU(inplace=True)
+      )
+      (catconv): Sequential(
+        (0): Conv2d(96, 32, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+        (1): BatchNorm2d(32, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (2): ReLU(inplace=True)
+      )
+      (convA): Conv2d(32, 1, kernel_size=(1, 1), stride=(1, 1))
+      (convB): Conv2d(32, 1, kernel_size=(1, 1), stride=(1, 1))
+      (sigmoid): Sigmoid()
+    )
+    (timeInfo2): TFF(
+      (catconvA): Sequential(
+        (0): Conv2d(128, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+        (1): BatchNorm2d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (2): ReLU(inplace=True)
+      )
+      (catconvB): Sequential(
+        (0): Conv2d(128, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+        (1): BatchNorm2d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (2): ReLU(inplace=True)
+      )
+      (catconv): Sequential(
+        (0): Conv2d(192, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+        (1): BatchNorm2d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (2): ReLU(inplace=True)
+      )
+      (convA): Conv2d(64, 1, kernel_size=(1, 1), stride=(1, 1))
+      (convB): Conv2d(64, 1, kernel_size=(1, 1), stride=(1, 1))
+      (sigmoid): Sigmoid()
+    )
+    (timeInfo3): TFF(
+      (catconvA): Sequential(
+        (0): Conv2d(192, 96, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+        (1): BatchNorm2d(96, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (2): ReLU(inplace=True)
+      )
+      (catconvB): Sequential(
+        (0): Conv2d(192, 96, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+        (1): BatchNorm2d(96, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (2): ReLU(inplace=True)
+      )
+      (catconv): Sequential(
+        (0): Conv2d(288, 96, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+        (1): BatchNorm2d(96, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (2): ReLU(inplace=True)
+      )
+      (convA): Conv2d(96, 1, kernel_size=(1, 1), stride=(1, 1))
+      (convB): Conv2d(96, 1, kernel_size=(1, 1), stride=(1, 1))
+      (sigmoid): Sigmoid()
+    )
+    (timeInfo4): TFF(
+      (catconvA): Sequential(
+        (0): Conv2d(256, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+        (1): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (2): ReLU(inplace=True)
+      )
+      (catconvB): Sequential(
+        (0): Conv2d(256, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+        (1): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (2): ReLU(inplace=True)
+      )
+      (catconv): Sequential(
+        (0): Conv2d(384, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+        (1): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (2): ReLU(inplace=True)
+      )
+      (convA): Conv2d(128, 1, kernel_size=(1, 1), stride=(1, 1))
+      (convB): Conv2d(128, 1, kernel_size=(1, 1), stride=(1, 1))
+      (sigmoid): Sigmoid()
+    )
+  )
+  (decoder): Decoder(
+    (upsample1): Sequential(
+      (0): Conv2d(384, 384, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+      (1): PixelShuffle(upscale_factor=2)
+      (2): LeakyReLU(negative_slope=0.1, inplace=True)
+    )
+    (upsample2): Sequential(
+      (0): Conv2d(288, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+      (1): PixelShuffle(upscale_factor=2)
+      (2): LeakyReLU(negative_slope=0.1, inplace=True)
+    )
+    (upsample3): Sequential(
+      (0): Conv2d(192, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+      (1): PixelShuffle(upscale_factor=2)
+      (2): LeakyReLU(negative_slope=0.1, inplace=True)
+    )
+    (conv): Conv2d(96, 4, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+  )
+)
+NLayerDiscriminator(
+  (model0): Sequential(
+    (0): Conv2d(8, 64, kernel_size=(4, 4), stride=(2, 2), padding=(2, 2))
+    (1): LeakyReLU(negative_slope=0.2, inplace=True)
+  )
+  (model1): Sequential(
+    (0): Conv2d(64, 128, kernel_size=(4, 4), stride=(2, 2), padding=(2, 2))
+    (1): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (2): LeakyReLU(negative_slope=0.2, inplace=True)
+  )
+  (model2): Sequential(
+    (0): Conv2d(128, 256, kernel_size=(4, 4), stride=(2, 2), padding=(2, 2))
+    (1): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (2): LeakyReLU(negative_slope=0.2, inplace=True)
+  )
+  (model3): Sequential(
+    (0): Conv2d(256, 512, kernel_size=(4, 4), stride=(1, 1), padding=(2, 2))
+    (1): BatchNorm2d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (2): LeakyReLU(negative_slope=0.2, inplace=True)
+  )
+  (model4): Sequential(
+    (0): Conv2d(512, 1, kernel_size=(4, 4), stride=(1, 1), padding=(2, 2))
+  )
+)
+Loading data...
+Training...
+Learning rate for Generator: 0.0002
+Learning rate for Discriminator: 0.0002
+Epoch[0] - 2023-05-29 01:34:48.164481
+Epoch[0 0/72] - G-Loss: 0.791633 - PD-Loss: 0.634730 - MSE: 0.017750 - Time: 6.944074917002581s
+Epoch[0 1/72] - G-Loss: 0.458712 - PD-Loss: 3.555101 - MSE: 0.013432 - Time: 0.3257959100883454s
+Epoch[0 2/72] - G-Loss: 0.327324 - PD-Loss: 0.557977 - MSE: 0.006773 - Time: 0.3498645559884608s
+Epoch[0 3/72] - G-Loss: 0.301889 - PD-Loss: 0.576346 - MSE: 0.004846 - Time: 0.32914525899104774s
+Epoch[0 4/72] - G-Loss: 0.244802 - PD-Loss: 0.428059 - MSE: 0.003527 - Time: 0.3601897209882736s
+Epoch[0 5/72] - G-Loss: 0.220701 - PD-Loss: 0.475399 - MSE: 0.002731 - Time: 0.3103782000252977s
+Epoch[0 6/72] - G-Loss: 0.199356 - PD-Loss: 0.559857 - MSE: 0.002485 - Time: 0.34331293392460793s
+Epoch[0 7/72] - G-Loss: 0.172432 - PD-Loss: 0.336369 - MSE: 0.002174 - Time: 0.32154258503578603s
+Epoch[0 8/72] - G-Loss: 0.183764 - PD-Loss: 0.430695 - MSE: 0.002551 - Time: 0.3619824529159814s
+Epoch[0 9/72] - G-Loss: 0.148360 - PD-Loss: 0.448934 - MSE: 0.002115 - Time: 0.3276571109890938s
+Epoch[0 10/72] - G-Loss: 0.144017 - PD-Loss: 0.363394 - MSE: 0.001900 - Time: 0.322562312008813s
+Epoch[0 11/72] - G-Loss: 0.196648 - PD-Loss: 0.319351 - MSE: 0.002731 - Time: 0.32991826708894223s
+Epoch[0 12/72] - G-Loss: 0.147997 - PD-Loss: 0.309373 - MSE: 0.001846 - Time: 0.3315810690401122s
+Epoch[0 13/72] - G-Loss: 0.131496 - PD-Loss: 0.326263 - MSE: 0.001649 - Time: 0.3085076858988032s
+Epoch[0 14/72] - G-Loss: 0.192239 - PD-Loss: 0.328897 - MSE: 0.002150 - Time: 0.3107407479546964s
+Epoch[0 15/72] - G-Loss: 0.141120 - PD-Loss: 0.281479 - MSE: 0.001592 - Time: 0.3323824650142342s
+Epoch[0 16/72] - G-Loss: 0.121461 - PD-Loss: 0.273962 - MSE: 0.001384 - Time: 0.3108834399608895s
+Epoch[0 17/72] - G-Loss: 0.151382 - PD-Loss: 0.276648 - MSE: 0.001629 - Time: 0.3212205939926207s
+Epoch[0 18/72] - G-Loss: 0.115532 - PD-Loss: 0.283572 - MSE: 0.001424 - Time: 0.3060401560505852s
+Epoch[0 19/72] - G-Loss: 0.118045 - PD-Loss: 0.277403 - MSE: 0.001295 - Time: 0.32107506098691374s
+Epoch[0 20/72] - G-Loss: 0.115460 - PD-Loss: 0.263938 - MSE: 0.001194 - Time: 0.3236785240005702s
+Epoch[0 21/72] - G-Loss: 0.123366 - PD-Loss: 0.257714 - MSE: 0.001513 - Time: 0.3214720709947869s
+Epoch[0 22/72] - G-Loss: 0.116531 - PD-Loss: 0.257592 - MSE: 0.001156 - Time: 0.31395576905924827s
+Epoch[0 23/72] - G-Loss: 0.097020 - PD-Loss: 0.254969 - MSE: 0.000979 - Time: 0.33533093507867306s
+Epoch[0 24/72] - G-Loss: 0.142237 - PD-Loss: 0.262437 - MSE: 0.001380 - Time: 0.33803188300225884s
+Epoch[0 25/72] - G-Loss: 0.102296 - PD-Loss: 0.254700 - MSE: 0.001282 - Time: 0.31435009301640093s
+Epoch[0 26/72] - G-Loss: 0.107130 - PD-Loss: 0.246683 - MSE: 0.001015 - Time: 0.32369598001241684s
+Epoch[0 27/72] - G-Loss: 0.141327 - PD-Loss: 0.243739 - MSE: 0.001851 - Time: 0.32727230607997626s
+Epoch[0 28/72] - G-Loss: 0.100356 - PD-Loss: 0.239451 - MSE: 0.001090 - Time: 0.32992130902130157s
+Epoch[0 29/72] - G-Loss: 0.102744 - PD-Loss: 0.239183 - MSE: 0.000968 - Time: 0.3103006810415536s
+Epoch[0 30/72] - G-Loss: 0.111161 - PD-Loss: 0.234503 - MSE: 0.001368 - Time: 0.3155091730877757s
+Epoch[0 31/72] - G-Loss: 0.118281 - PD-Loss: 0.237586 - MSE: 0.001240 - Time: 0.34302520600613207s
+Epoch[0 32/72] - G-Loss: 0.111846 - PD-Loss: 0.233966 - MSE: 0.001216 - Time: 0.3897680619265884s
+Epoch[0 33/72] - G-Loss: 0.089212 - PD-Loss: 0.232039 - MSE: 0.000836 - Time: 0.322151786996983s
+Epoch[0 34/72] - G-Loss: 0.108163 - PD-Loss: 0.225427 - MSE: 0.001039 - Time: 0.3289193030213937s
+Epoch[0 35/72] - G-Loss: 0.098483 - PD-Loss: 0.226779 - MSE: 0.001056 - Time: 0.3124440839746967s
+Epoch[0 36/72] - G-Loss: 0.096857 - PD-Loss: 0.224253 - MSE: 0.000962 - Time: 0.3220526269869879s
+Epoch[0 37/72] - G-Loss: 0.096978 - PD-Loss: 0.225124 - MSE: 0.001163 - Time: 0.31382263090927154s
+Epoch[0 38/72] - G-Loss: 0.089939 - PD-Loss: 0.224568 - MSE: 0.000979 - Time: 0.32283187203574926s
+Epoch[0 39/72] - G-Loss: 0.084850 - PD-Loss: 0.221394 - MSE: 0.000865 - Time: 0.30705295398365706s
+Epoch[0 40/72] - G-Loss: 0.115580 - PD-Loss: 0.214696 - MSE: 0.001399 - Time: 0.33301694807596505s
+Epoch[0 41/72] - G-Loss: 0.090710 - PD-Loss: 0.214403 - MSE: 0.000951 - Time: 0.3239904579240829s
+Epoch[0 42/72] - G-Loss: 0.094737 - PD-Loss: 0.214087 - MSE: 0.000892 - Time: 0.32092812506016344s
+Epoch[0 43/72] - G-Loss: 0.094969 - PD-Loss: 0.213580 - MSE: 0.000954 - Time: 0.30325494799762964s
+Epoch[0 44/72] - G-Loss: 0.095942 - PD-Loss: 0.208745 - MSE: 0.001081 - Time: 0.3045094390399754s
+Epoch[0 45/72] - G-Loss: 0.082808 - PD-Loss: 0.205650 - MSE: 0.000827 - Time: 0.333257858059369s
+Epoch[0 46/72] - G-Loss: 0.102367 - PD-Loss: 0.204065 - MSE: 0.001326 - Time: 0.3295146670425311s
+Epoch[0 47/72] - G-Loss: 0.093694 - PD-Loss: 0.205113 - MSE: 0.000970 - Time: 0.3226361130364239s
+Epoch[0 48/72] - G-Loss: 0.097253 - PD-Loss: 0.197126 - MSE: 0.000913 - Time: 0.3016906699631363s
+Epoch[0 49/72] - G-Loss: 0.088400 - PD-Loss: 0.191380 - MSE: 0.001020 - Time: 0.31076308398041874s
+Epoch[0 50/72] - G-Loss: 0.117602 - PD-Loss: 0.187791 - MSE: 0.001345 - Time: 0.33151696692220867s
+Epoch[0 51/72] - G-Loss: 0.096017 - PD-Loss: 0.185868 - MSE: 0.001030 - Time: 0.3249101520050317s
+Epoch[0 52/72] - G-Loss: 0.091903 - PD-Loss: 0.180714 - MSE: 0.000956 - Time: 0.29616838600486517s
+Epoch[0 53/72] - G-Loss: 0.094415 - PD-Loss: 0.178510 - MSE: 0.001052 - Time: 0.3263635369949043s
+Epoch[0 54/72] - G-Loss: 0.097686 - PD-Loss: 0.174937 - MSE: 0.001017 - Time: 0.31825537991244346s
+Epoch[0 55/72] - G-Loss: 0.085651 - PD-Loss: 0.163634 - MSE: 0.000996 - Time: 0.32478391600307077s
+Epoch[0 56/72] - G-Loss: 0.098586 - PD-Loss: 0.164865 - MSE: 0.001008 - Time: 0.3427632279926911s
+Epoch[0 57/72] - G-Loss: 0.081995 - PD-Loss: 0.158324 - MSE: 0.000971 - Time: 0.30472479306627065s
+Epoch[0 58/72] - G-Loss: 0.077700 - PD-Loss: 0.150573 - MSE: 0.000841 - Time: 0.31488064699806273s
+Epoch[0 59/72] - G-Loss: 0.113509 - PD-Loss: 0.150168 - MSE: 0.000995 - Time: 0.3054406320443377s
+Epoch[0 60/72] - G-Loss: 0.089624 - PD-Loss: 0.144920 - MSE: 0.000921 - Time: 0.3176601859740913s
+Epoch[0 61/72] - G-Loss: 0.092064 - PD-Loss: 0.128101 - MSE: 0.000855 - Time: 0.29773115494754165s
+Epoch[0 62/72] - G-Loss: 0.100995 - PD-Loss: 0.119605 - MSE: 0.001017 - Time: 0.31519417406525463s
+Epoch[0 63/72] - G-Loss: 0.107143 - PD-Loss: 0.118964 - MSE: 0.001168 - Time: 0.321359753026627s
+Epoch[0 64/72] - G-Loss: 0.084524 - PD-Loss: 0.102577 - MSE: 0.000745 - Time: 0.31640494090970606s
+Epoch[0 65/72] - G-Loss: 0.085852 - PD-Loss: 0.102756 - MSE: 0.000942 - Time: 0.35456283891107887s
+Epoch[0 66/72] - G-Loss: 0.096290 - PD-Loss: 0.098566 - MSE: 0.000931 - Time: 0.32335659000091255s
+Epoch[0 67/72] - G-Loss: 0.110581 - PD-Loss: 0.099659 - MSE: 0.001176 - Time: 0.3155362260295078s
+Epoch[0 68/72] - G-Loss: 0.087064 - PD-Loss: 0.090304 - MSE: 0.001050 - Time: 0.3152673520380631s
+Epoch[0 69/72] - G-Loss: 0.087526 - PD-Loss: 0.084399 - MSE: 0.000859 - Time: 0.31075472198426723s
+Epoch[0 70/72] - G-Loss: 0.078984 - PD-Loss: 0.080536 - MSE: 0.000866 - Time: 0.3246079469099641s
+Epoch[0 71/72] - G-Loss: 0.090880 - PD-Loss: 0.073404 - MSE: 0.000935 - Time: 0.3134874999523163s
+Epoch[0] - 2023-05-29 01:38:39.804559
+0.8821536742907706
+Learning rate for Generator: 0.0002
+Learning rate for Discriminator: 0.0002
+Epoch[1] - 2023-05-29 01:39:58.799541
+Epoch[1 0/72] - G-Loss: 0.082513 - PD-Loss: 0.063375 - MSE: 0.000771 - Time: 0.339681428973563s
+Epoch[1 1/72] - G-Loss: 0.085018 - PD-Loss: 0.065831 - MSE: 0.000803 - Time: 0.35725931997876614s
+Epoch[1 2/72] - G-Loss: 0.086081 - PD-Loss: 0.064148 - MSE: 0.000866 - Time: 0.3153483110945672s
+Epoch[1 3/72] - G-Loss: 0.085918 - PD-Loss: 0.044519 - MSE: 0.000757 - Time: 0.3283823139499873s
+Epoch[1 4/72] - G-Loss: 0.084714 - PD-Loss: 0.048923 - MSE: 0.000743 - Time: 0.31234670290723443s
+Epoch[1 5/72] - G-Loss: 0.094802 - PD-Loss: 0.044121 - MSE: 0.000992 - Time: 0.3388724500546232s
+Epoch[1 6/72] - G-Loss: 0.064824 - PD-Loss: 0.038088 - MSE: 0.000546 - Time: 0.32196552795358s
+Epoch[1 7/72] - G-Loss: 0.085857 - PD-Loss: 0.042315 - MSE: 0.000828 - Time: 0.32518499600701034s
+Epoch[1 8/72] - G-Loss: 0.086878 - PD-Loss: 0.049600 - MSE: 0.000834 - Time: 0.31818407005630434s
+Epoch[1 9/72] - G-Loss: 0.085285 - PD-Loss: 0.047398 - MSE: 0.000733 - Time: 0.34715566295199096s
+Epoch[1 10/72] - G-Loss: 0.086259 - PD-Loss: 0.050967 - MSE: 0.000772 - Time: 0.3355341840069741s
+Epoch[1 11/72] - G-Loss: 0.083916 - PD-Loss: 0.060181 - MSE: 0.000632 - Time: 0.3096324329962954s
+Epoch[1 12/72] - G-Loss: 0.094833 - PD-Loss: 0.070885 - MSE: 0.000858 - Time: 0.3288538970518857s
+Epoch[1 13/72] - G-Loss: 0.108693 - PD-Loss: 0.085754 - MSE: 0.001238 - Time: 0.32605367607902735s
+Epoch[1 14/72] - G-Loss: 0.084326 - PD-Loss: 0.109074 - MSE: 0.000708 - Time: 0.3367790870834142s
+Epoch[1 15/72] - G-Loss: 0.085385 - PD-Loss: 0.135564 - MSE: 0.000860 - Time: 0.3335226960480213s
+Epoch[1 16/72] - G-Loss: 0.087846 - PD-Loss: 0.195927 - MSE: 0.000828 - Time: 0.33642002497799695s
+Epoch[1 17/72] - G-Loss: 0.109518 - PD-Loss: 0.293918 - MSE: 0.001256 - Time: 0.33883333299309015s
+Epoch[1 18/72] - G-Loss: 0.103452 - PD-Loss: 0.403226 - MSE: 0.001017 - Time: 0.32729770604055375s
+Epoch[1 19/72] - G-Loss: 0.096071 - PD-Loss: 0.443978 - MSE: 0.000958 - Time: 0.32677646400406957s
+Epoch[1 20/72] - G-Loss: 0.084136 - PD-Loss: 0.392272 - MSE: 0.000912 - Time: 0.34667386405635625s
+Epoch[1 21/72] - G-Loss: 0.095094 - PD-Loss: 0.395256 - MSE: 0.001106 - Time: 0.30978964699897915s
+Epoch[1 22/72] - G-Loss: 0.072936 - PD-Loss: 0.333611 - MSE: 0.000833 - Time: 0.3112982700113207s
+Epoch[1 23/72] - G-Loss: 0.072066 - PD-Loss: 0.282058 - MSE: 0.000969 - Time: 0.3373155150329694s
+Epoch[1 24/72] - G-Loss: 0.076638 - PD-Loss: 0.265831 - MSE: 0.000962 - Time: 0.33089193399064243s
+Epoch[1 25/72] - G-Loss: 0.078183 - PD-Loss: 0.242474 - MSE: 0.001062 - Time: 0.31711462198290974s
+Epoch[1 26/72] - G-Loss: 0.087380 - PD-Loss: 0.229606 - MSE: 0.001143 - Time: 0.32884421409107745s
+Epoch[1 27/72] - G-Loss: 0.073680 - PD-Loss: 0.205317 - MSE: 0.000967 - Time: 0.32541048794519156s
+Epoch[1 28/72] - G-Loss: 0.079497 - PD-Loss: 0.198334 - MSE: 0.000935 - Time: 0.32732826797291636s
+Epoch[1 29/72] - G-Loss: 0.098773 - PD-Loss: 0.188913 - MSE: 0.001285 - Time: 0.31431610602885485s
+Epoch[1 30/72] - G-Loss: 0.104398 - PD-Loss: 0.185189 - MSE: 0.001270 - Time: 0.31311388802714646s
+Epoch[1 31/72] - G-Loss: 0.093294 - PD-Loss: 0.179062 - MSE: 0.000922 - Time: 0.32756836293265224s
+Epoch[1 32/72] - G-Loss: 0.076324 - PD-Loss: 0.178962 - MSE: 0.000748 - Time: 0.3131403789157048s
+Epoch[1 33/72] - G-Loss: 0.111547 - PD-Loss: 0.173152 - MSE: 0.001229 - Time: 0.3095262279966846s
+Epoch[1 34/72] - G-Loss: 0.096468 - PD-Loss: 0.167908 - MSE: 0.000950 - Time: 0.3367265759734437s
+Epoch[1 35/72] - G-Loss: 0.076733 - PD-Loss: 0.165154 - MSE: 0.000696 - Time: 0.3317674269201234s
+Epoch[1 36/72] - G-Loss: 0.083666 - PD-Loss: 0.162446 - MSE: 0.000895 - Time: 0.32251346099656075s
+Epoch[1 37/72] - G-Loss: 0.087680 - PD-Loss: 0.166072 - MSE: 0.000797 - Time: 0.34252764901611954s
+Epoch[1 38/72] - G-Loss: 0.085659 - PD-Loss: 0.149033 - MSE: 0.000726 - Time: 0.30599562893621624s
+Epoch[1 39/72] - G-Loss: 0.079320 - PD-Loss: 0.140297 - MSE: 0.000706 - Time: 0.32020340906456113s
+Epoch[1 40/72] - G-Loss: 0.075335 - PD-Loss: 0.141343 - MSE: 0.000726 - Time: 0.34259046998340636s
+Epoch[1 41/72] - G-Loss: 0.071465 - PD-Loss: 0.139982 - MSE: 0.000645 - Time: 0.3255283549660817s
+Epoch[1 42/72] - G-Loss: 0.074121 - PD-Loss: 0.124835 - MSE: 0.000654 - Time: 0.31409256800543517s
+Epoch[1 43/72] - G-Loss: 0.062461 - PD-Loss: 0.130891 - MSE: 0.000541 - Time: 0.31189360097050667s
+Epoch[1 44/72] - G-Loss: 0.079569 - PD-Loss: 0.124607 - MSE: 0.000832 - Time: 0.31184955907519907s
+Epoch[1 45/72] - G-Loss: 0.089827 - PD-Loss: 0.159699 - MSE: 0.000721 - Time: 0.3111884059617296s
+Epoch[1 46/72] - G-Loss: 0.064228 - PD-Loss: 0.129961 - MSE: 0.000481 - Time: 0.30959337402600795s
+Epoch[1 47/72] - G-Loss: 0.075595 - PD-Loss: 0.138104 - MSE: 0.000718 - Time: 0.3244260239880532s
+Epoch[1 48/72] - G-Loss: 0.083030 - PD-Loss: 0.134653 - MSE: 0.000665 - Time: 0.33145279402378947s
+Epoch[1 49/72] - G-Loss: 0.085451 - PD-Loss: 0.113477 - MSE: 0.000642 - Time: 0.32436147204134613s
+Epoch[1 50/72] - G-Loss: 0.068543 - PD-Loss: 0.104592 - MSE: 0.000600 - Time: 0.3162156119942665s
+Epoch[1 51/72] - G-Loss: 0.071373 - PD-Loss: 0.114002 - MSE: 0.000632 - Time: 0.3138380980817601s
+Epoch[1 52/72] - G-Loss: 0.080463 - PD-Loss: 0.104260 - MSE: 0.000773 - Time: 0.3312152250437066s
+Epoch[1 53/72] - G-Loss: 0.085843 - PD-Loss: 0.097063 - MSE: 0.000985 - Time: 0.30964670598041266s
+Epoch[1 54/72] - G-Loss: 0.077021 - PD-Loss: 0.118121 - MSE: 0.000619 - Time: 0.3121878789970651s
+Epoch[1 55/72] - G-Loss: 0.055049 - PD-Loss: 0.087510 - MSE: 0.000436 - Time: 0.3116501170443371s
+Epoch[1 56/72] - G-Loss: 0.072724 - PD-Loss: 0.088333 - MSE: 0.000681 - Time: 0.3079901059390977s
+Epoch[1 57/72] - G-Loss: 0.070275 - PD-Loss: 0.083474 - MSE: 0.000686 - Time: 0.3197496769716963s
+Epoch[1 58/72] - G-Loss: 0.106762 - PD-Loss: 0.077800 - MSE: 0.000863 - Time: 0.3033814530353993s
+Epoch[1 59/72] - G-Loss: 0.069248 - PD-Loss: 0.069182 - MSE: 0.000647 - Time: 0.3206455270992592s
+Epoch[1 60/72] - G-Loss: 0.071325 - PD-Loss: 0.069428 - MSE: 0.000627 - Time: 0.3197375030722469s
+Epoch[1 61/72] - G-Loss: 0.076406 - PD-Loss: 0.069012 - MSE: 0.000604 - Time: 0.3242112210718915s
+Epoch[1 62/72] - G-Loss: 0.088235 - PD-Loss: 0.059291 - MSE: 0.000759 - Time: 0.32642448600381613s
+Epoch[1 63/72] - G-Loss: 0.081681 - PD-Loss: 0.081851 - MSE: 0.000744 - Time: 0.3154875839827582s
+Epoch[1 64/72] - G-Loss: 0.100294 - PD-Loss: 0.057878 - MSE: 0.000860 - Time: 0.3080047069815919s
+Epoch[1 65/72] - G-Loss: 0.063118 - PD-Loss: 0.050995 - MSE: 0.000533 - Time: 0.3300820520380512s
+Epoch[1 66/72] - G-Loss: 0.095564 - PD-Loss: 0.050247 - MSE: 0.000750 - Time: 0.3209610109915957s
+Epoch[1 67/72] - G-Loss: 0.090525 - PD-Loss: 0.044099 - MSE: 0.000764 - Time: 0.3199211450992152s
+Epoch[1 68/72] - G-Loss: 0.085304 - PD-Loss: 0.047291 - MSE: 0.000670 - Time: 0.31141404202207923s
+Epoch[1 69/72] - G-Loss: 0.083320 - PD-Loss: 0.046602 - MSE: 0.000783 - Time: 0.33216778794303536s
+Epoch[1 70/72] - G-Loss: 0.073892 - PD-Loss: 0.030567 - MSE: 0.000648 - Time: 0.3231925970176235s
+Epoch[1 71/72] - G-Loss: 0.074539 - PD-Loss: 0.031606 - MSE: 0.000628 - Time: 0.3232731830794364s
+Epoch[1] - 2023-05-29 01:44:29.052246
+0.882582001264428
+Learning rate for Generator: 0.0002
+Learning rate for Discriminator: 0.0002
+Epoch[2] - 2023-05-29 01:45:55.077413
+Epoch[2 0/72] - G-Loss: 0.069765 - PD-Loss: 0.049455 - MSE: 0.000512 - Time: 0.30323615996167064s
+Epoch[2 1/72] - G-Loss: 0.100906 - PD-Loss: 0.044852 - MSE: 0.000949 - Time: 0.30303057795390487s
+Epoch[2 2/72] - G-Loss: 0.099493 - PD-Loss: 0.043385 - MSE: 0.000862 - Time: 0.30610287201125175s
+Epoch[2 3/72] - G-Loss: 0.079374 - PD-Loss: 0.052538 - MSE: 0.000561 - Time: 0.28489043202716857s
+Epoch[2 4/72] - G-Loss: 0.082930 - PD-Loss: 0.051460 - MSE: 0.000691 - Time: 0.3062520551029593s
+Epoch[2 5/72] - G-Loss: 0.056698 - PD-Loss: 0.045559 - MSE: 0.000508 - Time: 0.2962236599996686s
+Epoch[2 6/72] - G-Loss: 0.067867 - PD-Loss: 0.054750 - MSE: 0.000616 - Time: 0.2913508729543537s
+Epoch[2 7/72] - G-Loss: 0.088381 - PD-Loss: 0.098695 - MSE: 0.000607 - Time: 0.31146335101220757s
+Epoch[2 8/72] - G-Loss: 0.089350 - PD-Loss: 0.083403 - MSE: 0.000765 - Time: 0.29824880696833134s
+Epoch[2 9/72] - G-Loss: 0.069232 - PD-Loss: 0.139080 - MSE: 0.000631 - Time: 0.30584958696272224s
+Epoch[2 10/72] - G-Loss: 0.074192 - PD-Loss: 0.176795 - MSE: 0.000594 - Time: 0.30946819100063294s
+Epoch[2 11/72] - G-Loss: 0.065873 - PD-Loss: 0.165774 - MSE: 0.000579 - Time: 0.3041097510140389s
+Epoch[2 12/72] - G-Loss: 0.066592 - PD-Loss: 0.165068 - MSE: 0.000656 - Time: 0.318528137053363s
+Epoch[2 13/72] - G-Loss: 0.070458 - PD-Loss: 0.247467 - MSE: 0.000539 - Time: 0.3119169899728149s
+Epoch[2 14/72] - G-Loss: 0.099828 - PD-Loss: 0.285902 - MSE: 0.001008 - Time: 0.3256738859927282s
+Epoch[2 15/72] - G-Loss: 0.079636 - PD-Loss: 0.313031 - MSE: 0.000653 - Time: 0.30040002905298024s
+Epoch[2 16/72] - G-Loss: 0.068072 - PD-Loss: 0.307009 - MSE: 0.000536 - Time: 0.3049985159887001s
+Epoch[2 17/72] - G-Loss: 0.084355 - PD-Loss: 0.267672 - MSE: 0.000800 - Time: 0.28231256105937064s
+Epoch[2 18/72] - G-Loss: 0.070684 - PD-Loss: 0.215182 - MSE: 0.000622 - Time: 0.29679536796174943s
+Epoch[2 19/72] - G-Loss: 0.072398 - PD-Loss: 0.237770 - MSE: 0.000630 - Time: 0.2996030440554023s
+Epoch[2 20/72] - G-Loss: 0.072451 - PD-Loss: 0.189381 - MSE: 0.000662 - Time: 0.30601982690859586s
+Epoch[2 21/72] - G-Loss: 0.072732 - PD-Loss: 0.168304 - MSE: 0.000670 - Time: 0.3107613029424101s
+Epoch[2 22/72] - G-Loss: 0.073900 - PD-Loss: 0.180046 - MSE: 0.000697 - Time: 0.3117430459242314s
+Epoch[2 23/72] - G-Loss: 0.102892 - PD-Loss: 0.156788 - MSE: 0.001174 - Time: 0.3209168929606676s
+Epoch[2 24/72] - G-Loss: 0.076247 - PD-Loss: 0.149133 - MSE: 0.000793 - Time: 0.31352657196111977s
+Epoch[2 25/72] - G-Loss: 0.075515 - PD-Loss: 0.144925 - MSE: 0.000770 - Time: 0.29233843903057277s
+Epoch[2 26/72] - G-Loss: 0.061152 - PD-Loss: 0.128287 - MSE: 0.000627 - Time: 0.3138961400836706s
+Epoch[2 27/72] - G-Loss: 0.073504 - PD-Loss: 0.150992 - MSE: 0.000657 - Time: 0.31058309599757195s
+Epoch[2 28/72] - G-Loss: 0.081983 - PD-Loss: 0.131529 - MSE: 0.000764 - Time: 0.29755469295196235s
+Epoch[2 29/72] - G-Loss: 0.104296 - PD-Loss: 0.130741 - MSE: 0.001035 - Time: 0.3001283899648115s
+Epoch[2 30/72] - G-Loss: 0.073225 - PD-Loss: 0.126357 - MSE: 0.000635 - Time: 0.30348238500300795s
+Epoch[2 31/72] - G-Loss: 0.067927 - PD-Loss: 0.123271 - MSE: 0.000601 - Time: 0.29846842598635703s
+Epoch[2 32/72] - G-Loss: 0.077539 - PD-Loss: 0.117917 - MSE: 0.000731 - Time: 0.3049623219994828s
+Epoch[2 33/72] - G-Loss: 0.066022 - PD-Loss: 0.120128 - MSE: 0.000632 - Time: 0.315188706968911s
+Epoch[2 34/72] - G-Loss: 0.065922 - PD-Loss: 0.119614 - MSE: 0.000591 - Time: 0.30684692703653127s
+Epoch[2 35/72] - G-Loss: 0.076993 - PD-Loss: 0.116092 - MSE: 0.000687 - Time: 0.2987264699768275s
+Epoch[2 36/72] - G-Loss: 0.092058 - PD-Loss: 0.112996 - MSE: 0.000747 - Time: 0.29071247891988605s
+Epoch[2 37/72] - G-Loss: 0.065667 - PD-Loss: 0.101047 - MSE: 0.000675 - Time: 0.3059677330311388s
+Epoch[2 38/72] - G-Loss: 0.097611 - PD-Loss: 0.116023 - MSE: 0.000795 - Time: 0.2857795370509848s
+Epoch[2 39/72] - G-Loss: 0.076536 - PD-Loss: 0.095202 - MSE: 0.000644 - Time: 0.2871110469568521s
+Epoch[2 40/72] - G-Loss: 0.071520 - PD-Loss: 0.135960 - MSE: 0.000605 - Time: 0.3057563479524106s
+Epoch[2 41/72] - G-Loss: 0.076178 - PD-Loss: 0.113693 - MSE: 0.000693 - Time: 0.29362250899430364s
+Epoch[2 42/72] - G-Loss: 0.068689 - PD-Loss: 0.117206 - MSE: 0.000573 - Time: 0.3028023720253259s
+Epoch[2 43/72] - G-Loss: 0.097937 - PD-Loss: 0.116435 - MSE: 0.000923 - Time: 0.3067003849428147s
+Epoch[2 44/72] - G-Loss: 0.067816 - PD-Loss: 0.166430 - MSE: 0.000616 - Time: 0.3090333320433274s
+Epoch[2 45/72] - G-Loss: 0.070784 - PD-Loss: 0.150555 - MSE: 0.000661 - Time: 0.2940808970015496s
+Epoch[2 46/72] - G-Loss: 0.060454 - PD-Loss: 0.190296 - MSE: 0.000568 - Time: 0.31025363598018885s
+Epoch[2 47/72] - G-Loss: 0.062598 - PD-Loss: 0.186025 - MSE: 0.000554 - Time: 0.3037122639361769s
+Epoch[2 48/72] - G-Loss: 0.082069 - PD-Loss: 0.218653 - MSE: 0.000744 - Time: 0.30847739498130977s
+Epoch[2 49/72] - G-Loss: 0.079329 - PD-Loss: 0.235844 - MSE: 0.000811 - Time: 0.3071164090652019s
+Epoch[2 50/72] - G-Loss: 0.078731 - PD-Loss: 0.224002 - MSE: 0.000716 - Time: 0.2844010900007561s
+Epoch[2 51/72] - G-Loss: 0.069956 - PD-Loss: 0.280458 - MSE: 0.000622 - Time: 0.3057191689731553s
+Model initialization
+There are 3072748 trainable parameters for generator.
+There are 2771649 trainable parameters for nlayerdiscriminator.
+Generator(
+  (encoder): InfoExchange(
+    (Res_layer1): Sequential(
+      (0): Conv2d(4, 16, kernel_size=(7, 7), stride=(1, 1), padding=(3, 3))
+      (1): ResBlock(
+        (residual): Sequential(
+          (0): ReflectionPad2d((1, 1, 1, 1))
+          (1): Conv2d(16, 16, kernel_size=(3, 3), stride=(1, 1))
+          (2): Dropout(p=0.5, inplace=False)
+          (3): LeakyReLU(negative_slope=0.01, inplace=True)
+          (4): ReflectionPad2d((1, 1, 1, 1))
+          (5): Conv2d(16, 16, kernel_size=(3, 3), stride=(1, 1))
+          (6): Dropout(p=0.5, inplace=False)
+        )
+      )
+    )
+    (Res_layer2): Sequential(
+      (0): Conv2d(16, 32, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1))
+      (1): ResBlock(
+        (residual): Sequential(
+          (0): ReflectionPad2d((1, 1, 1, 1))
+          (1): Conv2d(32, 32, kernel_size=(3, 3), stride=(1, 1))
+          (2): Dropout(p=0.5, inplace=False)
+          (3): LeakyReLU(negative_slope=0.01, inplace=True)
+          (4): ReflectionPad2d((1, 1, 1, 1))
+          (5): Conv2d(32, 32, kernel_size=(3, 3), stride=(1, 1))
+          (6): Dropout(p=0.5, inplace=False)
+        )
+      )
+    )
+    (Res_layer3): Sequential(
+      (0): Conv2d(32, 64, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1))
+      (1): ResBlock(
+        (residual): Sequential(
+          (0): ReflectionPad2d((1, 1, 1, 1))
+          (1): Conv2d(64, 64, kernel_size=(3, 3), stride=(1, 1))
+          (2): Dropout(p=0.5, inplace=False)
+          (3): LeakyReLU(negative_slope=0.01, inplace=True)
+          (4): ReflectionPad2d((1, 1, 1, 1))
+          (5): Conv2d(64, 64, kernel_size=(3, 3), stride=(1, 1))
+          (6): Dropout(p=0.5, inplace=False)
+        )
+      )
+    )
+    (Res_layer4): Sequential(
+      (0): Conv2d(64, 128, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1))
+      (1): ResBlock(
+        (residual): Sequential(
+          (0): ReflectionPad2d((1, 1, 1, 1))
+          (1): Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1))
+          (2): Dropout(p=0.5, inplace=False)
+          (3): LeakyReLU(negative_slope=0.01, inplace=True)
+          (4): ReflectionPad2d((1, 1, 1, 1))
+          (5): Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1))
+          (6): Dropout(p=0.5, inplace=False)
+        )
+      )
+    )
+    (ConcatConv1): Sequential(
+      (0): Conv2d(32, 16, kernel_size=(1, 1), stride=(1, 1))
+      (1): BatchNorm2d(16, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (2): ReLU(inplace=True)
+    )
+    (ConcatConv2): Sequential(
+      (0): Conv2d(64, 32, kernel_size=(1, 1), stride=(1, 1))
+      (1): BatchNorm2d(32, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (2): ReLU(inplace=True)
+    )
+    (ConcatConv3): Sequential(
+      (0): Conv2d(128, 64, kernel_size=(1, 1), stride=(1, 1))
+      (1): BatchNorm2d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (2): ReLU(inplace=True)
+    )
+    (ConcatConv4): Sequential(
+      (0): Conv2d(256, 128, kernel_size=(1, 1), stride=(1, 1))
+      (1): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (2): ReLU(inplace=True)
+    )
+    (timeInfo1): TFF(
+      (catconvA): Sequential(
+        (0): Conv2d(32, 16, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+        (1): BatchNorm2d(16, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (2): ReLU(inplace=True)
+      )
+      (catconvB): Sequential(
+        (0): Conv2d(32, 16, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+        (1): BatchNorm2d(16, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (2): ReLU(inplace=True)
+      )
+      (catconv): Sequential(
+        (0): Conv2d(48, 16, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+        (1): BatchNorm2d(16, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (2): ReLU(inplace=True)
+      )
+      (convA): Conv2d(16, 1, kernel_size=(1, 1), stride=(1, 1))
+      (convB): Conv2d(16, 1, kernel_size=(1, 1), stride=(1, 1))
+      (sigmoid): Sigmoid()
+    )
+    (timeInfo2): TFF(
+      (catconvA): Sequential(
+        (0): Conv2d(64, 32, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+        (1): BatchNorm2d(32, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (2): ReLU(inplace=True)
+      )
+      (catconvB): Sequential(
+        (0): Conv2d(64, 32, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+        (1): BatchNorm2d(32, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (2): ReLU(inplace=True)
+      )
+      (catconv): Sequential(
+        (0): Conv2d(96, 32, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+        (1): BatchNorm2d(32, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (2): ReLU(inplace=True)
+      )
+      (convA): Conv2d(32, 1, kernel_size=(1, 1), stride=(1, 1))
+      (convB): Conv2d(32, 1, kernel_size=(1, 1), stride=(1, 1))
+      (sigmoid): Sigmoid()
+    )
+    (timeInfo3): TFF(
+      (catconvA): Sequential(
+        (0): Conv2d(128, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+        (1): BatchNorm2d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (2): ReLU(inplace=True)
+      )
+      (catconvB): Sequential(
+        (0): Conv2d(128, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+        (1): BatchNorm2d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (2): ReLU(inplace=True)
+      )
+      (catconv): Sequential(
+        (0): Conv2d(192, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+        (1): BatchNorm2d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (2): ReLU(inplace=True)
+      )
+      (convA): Conv2d(64, 1, kernel_size=(1, 1), stride=(1, 1))
+      (convB): Conv2d(64, 1, kernel_size=(1, 1), stride=(1, 1))
+      (sigmoid): Sigmoid()
+    )
+    (timeInfo4): TFF(
+      (catconvA): Sequential(
+        (0): Conv2d(256, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+        (1): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (2): ReLU(inplace=True)
+      )
+      (catconvB): Sequential(
+        (0): Conv2d(256, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+        (1): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (2): ReLU(inplace=True)
+      )
+      (catconv): Sequential(
+        (0): Conv2d(384, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+        (1): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+        (2): ReLU(inplace=True)
+      )
+      (convA): Conv2d(128, 1, kernel_size=(1, 1), stride=(1, 1))
+      (convB): Conv2d(128, 1, kernel_size=(1, 1), stride=(1, 1))
+      (sigmoid): Sigmoid()
+    )
+  )
+  (decoder): Decoder(
+    (upsample1): Sequential(
+      (0): Conv2d(384, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+      (1): PixelShuffle(upscale_factor=2)
+      (2): LeakyReLU(negative_slope=0.1, inplace=True)
+    )
+    (upsample2): Sequential(
+      (0): Conv2d(192, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+      (1): PixelShuffle(upscale_factor=2)
+      (2): LeakyReLU(negative_slope=0.1, inplace=True)
+    )
+    (upsample3): Sequential(
+      (0): Conv2d(96, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+      (1): PixelShuffle(upscale_factor=2)
+      (2): LeakyReLU(negative_slope=0.1, inplace=True)
+    )
+    (conv): Conv2d(48, 4, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+  )
+)
+NLayerDiscriminator(
+  (model0): Sequential(
+    (0): Conv2d(8, 64, kernel_size=(4, 4), stride=(2, 2), padding=(2, 2))
+    (1): LeakyReLU(negative_slope=0.2, inplace=True)
+  )
+  (model1): Sequential(
+    (0): Conv2d(64, 128, kernel_size=(4, 4), stride=(2, 2), padding=(2, 2))
+    (1): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (2): LeakyReLU(negative_slope=0.2, inplace=True)
+  )
+  (model2): Sequential(
+    (0): Conv2d(128, 256, kernel_size=(4, 4), stride=(2, 2), padding=(2, 2))
+    (1): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (2): LeakyReLU(negative_slope=0.2, inplace=True)
+  )
+  (model3): Sequential(
+    (0): Conv2d(256, 512, kernel_size=(4, 4), stride=(1, 1), padding=(2, 2))
+    (1): BatchNorm2d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (2): LeakyReLU(negative_slope=0.2, inplace=True)
+  )
+  (model4): Sequential(
+    (0): Conv2d(512, 1, kernel_size=(4, 4), stride=(1, 1), padding=(2, 2))
+  )
+)
+Traceback (most recent call last):
+  File "run.py", line 79, in <module>
+    experiment.train(train_dir, val_dir,
+  File "/home/clhu/STF/srntt_AdaIN/experiment.py", line 277, in train
+    load_checkpoint(self.last_g, self.generator, optimizer=self.g_optimizer)
+  File "/home/clhu/STF/srntt_AdaIN/utils.py", line 72, in load_checkpoint
+    model.load_state_dict(state['state_dict'])
+  File "/home/clhu/anaconda3/envs/stf/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1604, in load_state_dict
+    raise RuntimeError('Error(s) in loading state_dict for {}:\n\t{}'.format(
+RuntimeError: Error(s) in loading state_dict for Generator:
+	size mismatch for encoder.Res_layer1.0.weight: copying a param with shape torch.Size([32, 4, 7, 7]) from checkpoint, the shape in current model is torch.Size([16, 4, 7, 7]).
+	size mismatch for encoder.Res_layer1.0.bias: copying a param with shape torch.Size([32]) from checkpoint, the shape in current model is torch.Size([16]).
+	size mismatch for encoder.Res_layer1.1.residual.1.weight: copying a param with shape torch.Size([32, 32, 3, 3]) from checkpoint, the shape in current model is torch.Size([16, 16, 3, 3]).
+	size mismatch for encoder.Res_layer1.1.residual.1.bias: copying a param with shape torch.Size([32]) from checkpoint, the shape in current model is torch.Size([16]).
+	size mismatch for encoder.Res_layer1.1.residual.5.weight: copying a param with shape torch.Size([32, 32, 3, 3]) from checkpoint, the shape in current model is torch.Size([16, 16, 3, 3]).
+	size mismatch for encoder.Res_layer1.1.residual.5.bias: copying a param with shape torch.Size([32]) from checkpoint, the shape in current model is torch.Size([16]).
+	size mismatch for encoder.Res_layer2.0.weight: copying a param with shape torch.Size([64, 32, 3, 3]) from checkpoint, the shape in current model is torch.Size([32, 16, 3, 3]).
+	size mismatch for encoder.Res_layer2.0.bias: copying a param with shape torch.Size([64]) from checkpoint, the shape in current model is torch.Size([32]).
+	size mismatch for encoder.Res_layer2.1.residual.1.weight: copying a param with shape torch.Size([64, 64, 3, 3]) from checkpoint, the shape in current model is torch.Size([32, 32, 3, 3]).
+	size mismatch for encoder.Res_layer2.1.residual.1.bias: copying a param with shape torch.Size([64]) from checkpoint, the shape in current model is torch.Size([32]).
+	size mismatch for encoder.Res_layer2.1.residual.5.weight: copying a param with shape torch.Size([64, 64, 3, 3]) from checkpoint, the shape in current model is torch.Size([32, 32, 3, 3]).
+	size mismatch for encoder.Res_layer2.1.residual.5.bias: copying a param with shape torch.Size([64]) from checkpoint, the shape in current model is torch.Size([32]).
+	size mismatch for encoder.Res_layer3.0.weight: copying a param with shape torch.Size([96, 64, 3, 3]) from checkpoint, the shape in current model is torch.Size([64, 32, 3, 3]).
+	size mismatch for encoder.Res_layer3.0.bias: copying a param with shape torch.Size([96]) from checkpoint, the shape in current model is torch.Size([64]).
+	size mismatch for encoder.Res_layer3.1.residual.1.weight: copying a param with shape torch.Size([96, 96, 3, 3]) from checkpoint, the shape in current model is torch.Size([64, 64, 3, 3]).
+	size mismatch for encoder.Res_layer3.1.residual.1.bias: copying a param with shape torch.Size([96]) from checkpoint, the shape in current model is torch.Size([64]).
+	size mismatch for encoder.Res_layer3.1.residual.5.weight: copying a param with shape torch.Size([96, 96, 3, 3]) from checkpoint, the shape in current model is torch.Size([64, 64, 3, 3]).
+	size mismatch for encoder.Res_layer3.1.residual.5.bias: copying a param with shape torch.Size([96]) from checkpoint, the shape in current model is torch.Size([64]).
+	size mismatch for encoder.Res_layer4.0.weight: copying a param with shape torch.Size([128, 96, 3, 3]) from checkpoint, the shape in current model is torch.Size([128, 64, 3, 3]).
+	size mismatch for encoder.ConcatConv1.0.weight: copying a param with shape torch.Size([32, 64, 1, 1]) from checkpoint, the shape in current model is torch.Size([16, 32, 1, 1]).
+	size mismatch for encoder.ConcatConv1.0.bias: copying a param with shape torch.Size([32]) from checkpoint, the shape in current model is torch.Size([16]).
+	size mismatch for encoder.ConcatConv1.1.weight: copying a param with shape torch.Size([32]) from checkpoint, the shape in current model is torch.Size([16]).
+	size mismatch for encoder.ConcatConv1.1.bias: copying a param with shape torch.Size([32]) from checkpoint, the shape in current model is torch.Size([16]).
+	size mismatch for encoder.ConcatConv1.1.running_mean: copying a param with shape torch.Size([32]) from checkpoint, the shape in current model is torch.Size([16]).
+	size mismatch for encoder.ConcatConv1.1.running_var: copying a param with shape torch.Size([32]) from checkpoint, the shape in current model is torch.Size([16]).
+	size mismatch for encoder.ConcatConv2.0.weight: copying a param with shape torch.Size([64, 128, 1, 1]) from checkpoint, the shape in current model is torch.Size([32, 64, 1, 1]).
+	size mismatch for encoder.ConcatConv2.0.bias: copying a param with shape torch.Size([64]) from checkpoint, the shape in current model is torch.Size([32]).
+	size mismatch for encoder.ConcatConv2.1.weight: copying a param with shape torch.Size([64]) from checkpoint, the shape in current model is torch.Size([32]).
+	size mismatch for encoder.ConcatConv2.1.bias: copying a param with shape torch.Size([64]) from checkpoint, the shape in current model is torch.Size([32]).
+	size mismatch for encoder.ConcatConv2.1.running_mean: copying a param with shape torch.Size([64]) from checkpoint, the shape in current model is torch.Size([32]).
+	size mismatch for encoder.ConcatConv2.1.running_var: copying a param with shape torch.Size([64]) from checkpoint, the shape in current model is torch.Size([32]).
+	size mismatch for encoder.ConcatConv3.0.weight: copying a param with shape torch.Size([96, 192, 1, 1]) from checkpoint, the shape in current model is torch.Size([64, 128, 1, 1]).
+	size mismatch for encoder.ConcatConv3.0.bias: copying a param with shape torch.Size([96]) from checkpoint, the shape in current model is torch.Size([64]).
+	size mismatch for encoder.ConcatConv3.1.weight: copying a param with shape torch.Size([96]) from checkpoint, the shape in current model is torch.Size([64]).
+	size mismatch for encoder.ConcatConv3.1.bias: copying a param with shape torch.Size([96]) from checkpoint, the shape in current model is torch.Size([64]).
+	size mismatch for encoder.ConcatConv3.1.running_mean: copying a param with shape torch.Size([96]) from checkpoint, the shape in current model is torch.Size([64]).
+	size mismatch for encoder.ConcatConv3.1.running_var: copying a param with shape torch.Size([96]) from checkpoint, the shape in current model is torch.Size([64]).
+	size mismatch for encoder.timeInfo1.catconvA.0.weight: copying a param with shape torch.Size([32, 64, 3, 3]) from checkpoint, the shape in current model is torch.Size([16, 32, 3, 3]).
+	size mismatch for encoder.timeInfo1.catconvA.1.weight: copying a param with shape torch.Size([32]) from checkpoint, the shape in current model is torch.Size([16]).
+	size mismatch for encoder.timeInfo1.catconvA.1.bias: copying a param with shape torch.Size([32]) from checkpoint, the shape in current model is torch.Size([16]).
+	size mismatch for encoder.timeInfo1.catconvA.1.running_mean: copying a param with shape torch.Size([32]) from checkpoint, the shape in current model is torch.Size([16]).
+	size mismatch for encoder.timeInfo1.catconvA.1.running_var: copying a param with shape torch.Size([32]) from checkpoint, the shape in current model is torch.Size([16]).
+	size mismatch for encoder.timeInfo1.catconvB.0.weight: copying a param with shape torch.Size([32, 64, 3, 3]) from checkpoint, the shape in current model is torch.Size([16, 32, 3, 3]).
+	size mismatch for encoder.timeInfo1.catconvB.1.weight: copying a param with shape torch.Size([32]) from checkpoint, the shape in current model is torch.Size([16]).
+	size mismatch for encoder.timeInfo1.catconvB.1.bias: copying a param with shape torch.Size([32]) from checkpoint, the shape in current model is torch.Size([16]).
+	size mismatch for encoder.timeInfo1.catconvB.1.running_mean: copying a param with shape torch.Size([32]) from checkpoint, the shape in current model is torch.Size([16]).
+	size mismatch for encoder.timeInfo1.catconvB.1.running_var: copying a param with shape torch.Size([32]) from checkpoint, the shape in current model is torch.Size([16]).
+	size mismatch for encoder.timeInfo1.catconv.0.weight: copying a param with shape torch.Size([32, 96, 3, 3]) from checkpoint, the shape in current model is torch.Size([16, 48, 3, 3]).
+	size mismatch for encoder.timeInfo1.catconv.1.weight: copying a param with shape torch.Size([32]) from checkpoint, the shape in current model is torch.Size([16]).
+	size mismatch for encoder.timeInfo1.catconv.1.bias: copying a param with shape torch.Size([32]) from checkpoint, the shape in current model is torch.Size([16]).
+	size mismatch for encoder.timeInfo1.catconv.1.running_mean: copying a param with shape torch.Size([32]) from checkpoint, the shape in current model is torch.Size([16]).
+	size mismatch for encoder.timeInfo1.catconv.1.running_var: copying a param with shape torch.Size([32]) from checkpoint, the shape in current model is torch.Size([16]).
+	size mismatch for encoder.timeInfo1.convA.weight: copying a param with shape torch.Size([1, 32, 1, 1]) from checkpoint, the shape in current model is torch.Size([1, 16, 1, 1]).
+	size mismatch for encoder.timeInfo1.convB.weight: copying a param with shape torch.Size([1, 32, 1, 1]) from checkpoint, the shape in current model is torch.Size([1, 16, 1, 1]).
+	size mismatch for encoder.timeInfo2.catconvA.0.weight: copying a param with shape torch.Size([64, 128, 3, 3]) from checkpoint, the shape in current model is torch.Size([32, 64, 3, 3]).
+	size mismatch for encoder.timeInfo2.catconvA.1.weight: copying a param with shape torch.Size([64]) from checkpoint, the shape in current model is torch.Size([32]).
+	size mismatch for encoder.timeInfo2.catconvA.1.bias: copying a param with shape torch.Size([64]) from checkpoint, the shape in current model is torch.Size([32]).
+	size mismatch for encoder.timeInfo2.catconvA.1.running_mean: copying a param with shape torch.Size([64]) from checkpoint, the shape in current model is torch.Size([32]).
+	size mismatch for encoder.timeInfo2.catconvA.1.running_var: copying a param with shape torch.Size([64]) from checkpoint, the shape in current model is torch.Size([32]).
+	size mismatch for encoder.timeInfo2.catconvB.0.weight: copying a param with shape torch.Size([64, 128, 3, 3]) from checkpoint, the shape in current model is torch.Size([32, 64, 3, 3]).
+	size mismatch for encoder.timeInfo2.catconvB.1.weight: copying a param with shape torch.Size([64]) from checkpoint, the shape in current model is torch.Size([32]).
+	size mismatch for encoder.timeInfo2.catconvB.1.bias: copying a param with shape torch.Size([64]) from checkpoint, the shape in current model is torch.Size([32]).
+	size mismatch for encoder.timeInfo2.catconvB.1.running_mean: copying a param with shape torch.Size([64]) from checkpoint, the shape in current model is torch.Size([32]).
+	size mismatch for encoder.timeInfo2.catconvB.1.running_var: copying a param with shape torch.Size([64]) from checkpoint, the shape in current model is torch.Size([32]).
+	size mismatch for encoder.timeInfo2.catconv.0.weight: copying a param with shape torch.Size([64, 192, 3, 3]) from checkpoint, the shape in current model is torch.Size([32, 96, 3, 3]).
+	size mismatch for encoder.timeInfo2.catconv.1.weight: copying a param with shape torch.Size([64]) from checkpoint, the shape in current model is torch.Size([32]).
+	size mismatch for encoder.timeInfo2.catconv.1.bias: copying a param with shape torch.Size([64]) from checkpoint, the shape in current model is torch.Size([32]).
+	size mismatch for encoder.timeInfo2.catconv.1.running_mean: copying a param with shape torch.Size([64]) from checkpoint, the shape in current model is torch.Size([32]).
+	size mismatch for encoder.timeInfo2.catconv.1.running_var: copying a param with shape torch.Size([64]) from checkpoint, the shape in current model is torch.Size([32]).
+	size mismatch for encoder.timeInfo2.convA.weight: copying a param with shape torch.Size([1, 64, 1, 1]) from checkpoint, the shape in current model is torch.Size([1, 32, 1, 1]).
+	size mismatch for encoder.timeInfo2.convB.weight: copying a param with shape torch.Size([1, 64, 1, 1]) from checkpoint, the shape in current model is torch.Size([1, 32, 1, 1]).
+	size mismatch for encoder.timeInfo3.catconvA.0.weight: copying a param with shape torch.Size([96, 192, 3, 3]) from checkpoint, the shape in current model is torch.Size([64, 128, 3, 3]).
+	size mismatch for encoder.timeInfo3.catconvA.1.weight: copying a param with shape torch.Size([96]) from checkpoint, the shape in current model is torch.Size([64]).
+	size mismatch for encoder.timeInfo3.catconvA.1.bias: copying a param with shape torch.Size([96]) from checkpoint, the shape in current model is torch.Size([64]).
+	size mismatch for encoder.timeInfo3.catconvA.1.running_mean: copying a param with shape torch.Size([96]) from checkpoint, the shape in current model is torch.Size([64]).
+	size mismatch for encoder.timeInfo3.catconvA.1.running_var: copying a param with shape torch.Size([96]) from checkpoint, the shape in current model is torch.Size([64]).
+	size mismatch for encoder.timeInfo3.catconvB.0.weight: copying a param with shape torch.Size([96, 192, 3, 3]) from checkpoint, the shape in current model is torch.Size([64, 128, 3, 3]).
+	size mismatch for encoder.timeInfo3.catconvB.1.weight: copying a param with shape torch.Size([96]) from checkpoint, the shape in current model is torch.Size([64]).
+	size mismatch for encoder.timeInfo3.catconvB.1.bias: copying a param with shape torch.Size([96]) from checkpoint, the shape in current model is torch.Size([64]).
+	size mismatch for encoder.timeInfo3.catconvB.1.running_mean: copying a param with shape torch.Size([96]) from checkpoint, the shape in current model is torch.Size([64]).
+	size mismatch for encoder.timeInfo3.catconvB.1.running_var: copying a param with shape torch.Size([96]) from checkpoint, the shape in current model is torch.Size([64]).
+	size mismatch for encoder.timeInfo3.catconv.0.weight: copying a param with shape torch.Size([96, 288, 3, 3]) from checkpoint, the shape in current model is torch.Size([64, 192, 3, 3]).
+	size mismatch for encoder.timeInfo3.catconv.1.weight: copying a param with shape torch.Size([96]) from checkpoint, the shape in current model is torch.Size([64]).
+	size mismatch for encoder.timeInfo3.catconv.1.bias: copying a param with shape torch.Size([96]) from checkpoint, the shape in current model is torch.Size([64]).
+	size mismatch for encoder.timeInfo3.catconv.1.running_mean: copying a param with shape torch.Size([96]) from checkpoint, the shape in current model is torch.Size([64]).
+	size mismatch for encoder.timeInfo3.catconv.1.running_var: copying a param with shape torch.Size([96]) from checkpoint, the shape in current model is torch.Size([64]).
+	size mismatch for encoder.timeInfo3.convA.weight: copying a param with shape torch.Size([1, 96, 1, 1]) from checkpoint, the shape in current model is torch.Size([1, 64, 1, 1]).
+	size mismatch for encoder.timeInfo3.convB.weight: copying a param with shape torch.Size([1, 96, 1, 1]) from checkpoint, the shape in current model is torch.Size([1, 64, 1, 1]).
+	size mismatch for decoder.upsample1.0.weight: copying a param with shape torch.Size([384, 384, 3, 3]) from checkpoint, the shape in current model is torch.Size([256, 384, 3, 3]).
+	size mismatch for decoder.upsample1.0.bias: copying a param with shape torch.Size([384]) from checkpoint, the shape in current model is torch.Size([256]).
+	size mismatch for decoder.upsample2.0.weight: copying a param with shape torch.Size([256, 288, 3, 3]) from checkpoint, the shape in current model is torch.Size([128, 192, 3, 3]).
+	size mismatch for decoder.upsample2.0.bias: copying a param with shape torch.Size([256]) from checkpoint, the shape in current model is torch.Size([128]).
+	size mismatch for decoder.upsample3.0.weight: copying a param with shape torch.Size([128, 192, 3, 3]) from checkpoint, the shape in current model is torch.Size([64, 96, 3, 3]).
+	size mismatch for decoder.upsample3.0.bias: copying a param with shape torch.Size([128]) from checkpoint, the shape in current model is torch.Size([64]).
+	size mismatch for decoder.conv.weight: copying a param with shape torch.Size([4, 96, 3, 3]) from checkpoint, the shape in current model is torch.Size([4, 48, 3, 3]).
